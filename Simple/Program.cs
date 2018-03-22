@@ -40,10 +40,12 @@ namespace Simple
         static void Test3()
         {
             var lhdomain = new RabbitDomain();
-            var expr1 = lhdomain.CompileFromSource("exp(lv)=lv*10");
+            lhdomain.CompileFromSource("vf(x)=x+1");
+            var expr1 = lhdomain.CompileFromSource("exp(lv)=vf(lv)*10");
 
             var rhdomain = new RabbitDomain();
-            var expr2 = rhdomain.CompileFromSource("exp(lv)=lv*20");
+            rhdomain.CompileFromSource("vf(x)=x+2");
+            var expr2 = rhdomain.CompileFromSource("exp(lv)=vf(lv)*10");
 
             var result1 = expr1.Eval(new RuntimeContext()
             {
