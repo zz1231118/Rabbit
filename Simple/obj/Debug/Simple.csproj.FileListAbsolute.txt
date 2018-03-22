@@ -1,0 +1,9 @@
+D:\Code\CSharp\Rabbit\Simple\bin\Debug\Simple.exe
+D:\Code\CSharp\Rabbit\Simple\bin\Debug\Simple.pdb
+D:\Code\CSharp\Rabbit\Simple\bin\Debug\IronRabbit.dll
+D:\Code\CSharp\Rabbit\Simple\bin\Debug\IronRabbit.pdb
+D:\Code\CSharp\Rabbit\Simple\obj\Debug\Simple.csprojResolveAssemblyReference.cache
+D:\Code\CSharp\Rabbit\Simple\obj\Debug\Simple.csproj.CoreCompileInputs.cache
+D:\Code\CSharp\Rabbit\Simple\obj\Debug\Simple.csproj.CopyComplete
+D:\Code\CSharp\Rabbit\Simple\obj\Debug\Simple.exe
+D:\Code\CSharp\Rabbit\Simple\obj\Debug\Simple.pdb
