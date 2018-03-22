@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using IronRabbit.Expressions;
+using IronRabbit.Syntax;
 
 namespace IronRabbit.Compiler
 {
@@ -174,7 +175,7 @@ namespace IronRabbit.Compiler
             while (true)
             {
                 Token token = PeekToken();
-                if (!(token is Token.OperatorToken operToken))
+                if (!(token is OperatorToken operToken))
                 {
                     break;
                 }

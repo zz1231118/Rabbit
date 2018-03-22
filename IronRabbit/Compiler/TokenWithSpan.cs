@@ -1,4 +1,5 @@
 ﻿using System;
+using IronRabbit.Syntax;
 
 namespace IronRabbit.Compiler
 {

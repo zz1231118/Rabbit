@@ -1,4 +1,4 @@
-﻿namespace IronRabbit.Compiler
+﻿namespace IronRabbit.Syntax
 {
     internal enum TokenKind : byte
     {
