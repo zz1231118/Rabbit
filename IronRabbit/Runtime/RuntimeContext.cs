@@ -19,6 +19,16 @@ namespace IronRabbit.Runtime
             Domain = parent.Domain;
         }
 
+        public decimal this[string name]
+        {
+            set
+            {
+                if (name == null)
+                    throw new ArgumentNullException(nameof(name));
+
+                _variables[name] = value;
+            }
+        }
         internal RabbitDomain Domain { get; set; }
 
         private RuntimeContext FindCurrentOrParent(string name)
