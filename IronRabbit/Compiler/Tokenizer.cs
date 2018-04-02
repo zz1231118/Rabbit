@@ -225,7 +225,7 @@ namespace IronRabbit.Compiler
 
             BufferBack();
             MarkTokenEnd();
-            return Token.Constant(decimal.Parse(GetTokenString()));
+            return Token.Constant(double.Parse(GetTokenString()));
         }
         private Token ReadComment()
         {

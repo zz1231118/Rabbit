@@ -9,43 +9,36 @@ namespace IronRabbit
 {
     internal class Rabbit
     {
-        private static Dictionary<string, LambdaExpression> _systemFunctions = new Dictionary<string, LambdaExpression>();
+        private static Dictionary<string, SystemLambdaExpression> _systemFunctions = new Dictionary<string, SystemLambdaExpression>();
 
         static Rabbit()
         {
             var assembly = Assembly.GetExecutingAssembly();
             foreach (var type in assembly.GetTypes())
             {
-                var attributes = type.GetCustomAttributes(typeof(ExternMethodAttribute), false);
+                var attributes = type.GetCustomAttributes(typeof(ExternLambdaAttribute), false);
                 if (attributes.Length > 0)
                 {
-                    var @extern = attributes.First() as ExternMethodAttribute;
-                    ParameterExpression[] parameters = new ParameterExpression[@extern.Parameters.Count];
-                    for (int i = 0; i < parameters.Length; i++)
-                    {
-                        parameters[i] = Expression.Parameter(@extern.Parameters[i]);
-                    }
-
-                    Expression body = Activator.CreateInstance(type) as Expression;
-                    Register(Expression.Lambda(@extern.EntryPoint, body, parameters));
+                    var constructor = type.GetConstructor(Type.EmptyTypes);
+                    Register(constructor.Invoke(null) as SystemLambdaExpression);
                 }
             }
         }
 
-        internal static void Register(LambdaExpression lambda)
+        internal static void Register(SystemLambdaExpression lambda)
         {
             if (lambda == null)
                 throw new ArgumentNullException(nameof(lambda));
 
             _systemFunctions[lambda.Name] = lambda;
         }
-        internal static bool TryGetSystemLambda(string name, out LambdaExpression lambda)
+        internal static bool TryGetSystemLambda(string name, out SystemLambdaExpression lambda)
         {
             return _systemFunctions.TryGetValue(name, out lambda);
         }
-        internal static LambdaExpression GetSystemLambda(string name)
+        internal static SystemLambdaExpression GetSystemLambda(string name)
         {
-            LambdaExpression lambda;
+            SystemLambdaExpression lambda;
             _systemFunctions.TryGetValue(name, out lambda);
             return lambda;
         }

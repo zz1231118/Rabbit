@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using IronRabbit;
 using IronRabbit.Runtime;
 
@@ -11,7 +8,7 @@ namespace Simple
     {
         static void Main(string[] args)
         {
-            Test3();
+            Test4();
         }
 
         static void Test1()
@@ -57,6 +54,14 @@ namespace Simple
             });
 
             var a = result1;
+        }
+        static void Test4()
+        {
+            var domain = new RabbitDomain();
+            var expression = domain.CompileFromSource("maxhp(lv)=sqrt(lv)+100");
+            var func = expression.Compile<Func<double, double>>();
+            var result = func(4);
+            var a = result;
         }
     }
 }

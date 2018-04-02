@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using IronRabbit.Runtime;
 
@@ -7,7 +6,7 @@ namespace IronRabbit.Expressions
 {
     public class LambdaExpression : Expression
     {
-        internal LambdaExpression(string name, IList<ParameterExpression> parameters, Expression body)
+        internal LambdaExpression(string name, Expression body, params ParameterExpression[] parameters)
             : base(ExpressionType.Lambda)
         {
             Name = name;
@@ -20,7 +19,16 @@ namespace IronRabbit.Expressions
         public ReadOnlyCollection<ParameterExpression> Parameters { get; }
         public Expression Body { get; }
 
-        public override decimal Eval(RuntimeContext context)
+        public Delegate Compile(Type deletageType = null)
+        {
+            var lambdaCompiler = new LambdaCompiler(this);
+            return lambdaCompiler.Compile(deletageType);
+        }
+        public T Compile<T>()
+        {
+            return (T)(object)Compile(typeof(T));
+        }
+        public override double Eval(RuntimeContext context)
         {
             if (context == null)
                 throw new ArgumentNullException(nameof(context));

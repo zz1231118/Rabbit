@@ -15,12 +15,12 @@ namespace IronRabbit.Expressions
         public Expression Object { get; }
         public string MemberName { get; }
 
-        public override decimal Eval(RuntimeContext context)
+        public override double Eval(RuntimeContext context)
         {
             if (context == null)
                 throw new ArgumentNullException(nameof(context));
 
-            return default(decimal);
+            return default(double);
         }
     }
 }

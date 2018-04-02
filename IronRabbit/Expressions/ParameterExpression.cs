@@ -1,19 +1,22 @@
 ﻿using System;
+using System.Linq.Expressions;
 using IronRabbit.Runtime;
 
 namespace IronRabbit.Expressions
 {
     public class ParameterExpression : Expression
     {
-        internal ParameterExpression(ExpressionType type, string name)
-            : base(type)
+        internal ParameterExpression(ExpressionType nodeType, Type type, string name)
+            : base(nodeType)
         {
+            Type = type;
             Name = name;
         }
 
+        public Type Type { get; }
         public string Name { get; }
 
-        internal static decimal Access(RuntimeContext context, string name)
+        internal static double Access(RuntimeContext context, string name)
         {
             var value = context.Access(name);
             if (value == null)
@@ -22,7 +25,7 @@ namespace IronRabbit.Expressions
             return value.Value;
         }
 
-        public override decimal Eval(RuntimeContext context)
+        public override double Eval(RuntimeContext context)
         {
             if (context == null)
                 throw new ArgumentNullException(nameof(context));

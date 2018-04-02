@@ -23,8 +23,13 @@ namespace IronRabbit
             {
                 return true;
             }
+            if (Rabbit.TryGetSystemLambda(name, out SystemLambdaExpression systemLambda))
+            {
+                lambda = systemLambda;
+                return true;
+            }
 
-            return Rabbit.TryGetSystemLambda(name, out lambda);
+            return false;
         }
         public LambdaExpression GetLambda(string name)
         {

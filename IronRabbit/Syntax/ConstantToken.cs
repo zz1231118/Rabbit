@@ -2,15 +2,15 @@
 {
     internal class ConstantToken : Token
     {
-        private decimal _value;
+        private double _value;
 
-        public ConstantToken(decimal value)
+        public ConstantToken(double value)
             : base(TokenKind.Constant)
         {
             _value = value;
         }
 
         public override string Text => _value.ToString();
-        public override decimal Value => _value;
+        public override double Value => _value;
     }
 }

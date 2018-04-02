@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq.Expressions;
 using IronRabbit.Runtime;
 
 namespace IronRabbit.Expressions
@@ -15,13 +16,13 @@ namespace IronRabbit.Expressions
         public Expression Left { get; }
         public Expression Right { get; }
 
-        public override decimal Eval(RuntimeContext context)
+        public override double Eval(RuntimeContext context)
         {
             if (context == null)
                 throw new ArgumentNullException(nameof(context));
 
-            decimal lh = Left.Eval(context);
-            decimal rh = Right.Eval(context);
+            double lh = Left.Eval(context);
+            double rh = Right.Eval(context);
             switch (NodeType)
             {
                 case ExpressionType.Add:
@@ -35,7 +36,7 @@ namespace IronRabbit.Expressions
                 case ExpressionType.Modulo:
                     return lh % rh;
                 case ExpressionType.Power:
-                    return (decimal)Math.Pow((double)lh, (double)rh);
+                    return Math.Pow(lh, rh);
                 default:
                     throw new RuntimeException("unknown operator char:" + NodeType.ToString());
             }

@@ -12,7 +12,7 @@
         public abstract string Text { get; }
 
         public TokenKind Kind => _kind;
-        public virtual decimal Value
+        public virtual double Value
         {
             get => throw new System.NotSupportedException();
         }
@@ -29,7 +29,7 @@
         {
             return new SymbolToken(kind, symbol);
         }
-        public static Token Constant(decimal value)
+        public static Token Constant(double value)
         {
             return new ConstantToken(value);
         }

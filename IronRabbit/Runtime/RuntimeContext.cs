@@ -6,7 +6,7 @@ namespace IronRabbit.Runtime
     public class RuntimeContext
     {
         private RuntimeContext _parent;
-        private Dictionary<string, decimal> _variables = new Dictionary<string, decimal>();
+        private Dictionary<string, double> _variables = new Dictionary<string, double>();
 
         public RuntimeContext()
         { }
@@ -19,7 +19,7 @@ namespace IronRabbit.Runtime
             Domain = parent.Domain;
         }
 
-        public decimal this[string name]
+        public double this[string name]
         {
             set
             {
@@ -36,14 +36,14 @@ namespace IronRabbit.Runtime
             return _variables.ContainsKey(name) ? this : _parent?.FindCurrentOrParent(name);
         }
 
-        public void Variable(string name, decimal value)
+        public void Variable(string name, double value)
         {
             if (name == null)
                 throw new ArgumentNullException(nameof(name));
 
             _variables[name] = value;
         }
-        public decimal? Assign(string name, decimal value)
+        public double? Assign(string name, double value)
         {
             if (name == null)
                 throw new ArgumentNullException(nameof(name));
@@ -57,7 +57,7 @@ namespace IronRabbit.Runtime
             context._variables[name] = value;
             return value;
         }
-        public decimal? Access(string name)
+        public double? Access(string name)
         {
             if (name == null)
                 throw new ArgumentNullException(nameof(name));
@@ -65,7 +65,7 @@ namespace IronRabbit.Runtime
             var context = FindCurrentOrParent(name);
             if (context == null)
                 return null;
-            if (!context._variables.TryGetValue(name, out decimal value))
+            if (!context._variables.TryGetValue(name, out double value))
                 return null;
 
             return value;

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using IronRabbit.Runtime;
 
 namespace IronRabbit.Expressions
@@ -15,19 +16,19 @@ namespace IronRabbit.Expressions
 
         public virtual ExpressionType NodeType { get; }
 
-        public static ParameterExpression Parameter(string name)
+        public static ParameterExpression Parameter(Type type, string name)
         {
             if (name == null)
                 throw new ArgumentNullException(nameof(name));
 
-            return new ParameterExpression(ExpressionType.Parameter, name);
+            return new ParameterExpression(ExpressionType.Parameter, type, name);
         }
-        public static ParameterExpression Variable(string name)
+        public static ParameterExpression Variable(Type type, string name)
         {
             if (name == null)
                 throw new ArgumentNullException(nameof(name));
 
-            return new ParameterExpression(ExpressionType.Variable, name);
+            return new ParameterExpression(ExpressionType.Variable, type, name);
         }
         public static MemberExpression Member(Expression instance, string name)
         {
@@ -65,7 +66,7 @@ namespace IronRabbit.Expressions
 
             return new BinaryExpression(ExpressionType.Assign, left, right);
         }
-        public static ConstantExpression Constant(decimal value)
+        public static ConstantExpression Constant(double value)
         {
             return new ConstantExpression(value);
         }
@@ -178,7 +179,7 @@ namespace IronRabbit.Expressions
             if (body == null)
                 throw new ArgumentNullException(nameof(body));
 
-            return new LambdaExpression(name, parameters, body);
+            return new LambdaExpression(name, body, parameters);
         }
         public static LambdaExpression Lambda(string name, Expression body, IList<ParameterExpression> parameters)
         {
@@ -187,12 +188,12 @@ namespace IronRabbit.Expressions
             if (body == null)
                 throw new ArgumentNullException(nameof(body));
 
-            return new LambdaExpression(name, parameters, body);
+            return new LambdaExpression(name, body, parameters.ToArray());
         }
 
-        public virtual decimal Eval(RuntimeContext context)
+        public virtual double Eval(RuntimeContext context)
         {
-            return default(decimal);
+            return default(double);
         }
     }
 }

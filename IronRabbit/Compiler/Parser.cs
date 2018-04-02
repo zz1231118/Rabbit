@@ -137,7 +137,7 @@ namespace IronRabbit.Compiler
 
                             break;
                         case TokenKind.Dot:
-                            expr = Expression.Parameter(token.Text);
+                            expr = Expression.Parameter(null, token.Text);
                             while (MaybeEat(TokenKind.Dot))
                             {
                                 token = NextToken();
@@ -161,7 +161,7 @@ namespace IronRabbit.Compiler
                             }
                             break;
                         default:
-                            expr = Expression.Parameter(token.Text);
+                            expr = Expression.Parameter(typeof(double), token.Text);
                             break;
                     }
                     break;
@@ -209,7 +209,7 @@ namespace IronRabbit.Compiler
                 if (token.Kind != TokenKind.Identifier)
                     throw new CompilerException(_tokenizer.Position, token.Text);
 
-                parameters.Add(Expression.Parameter(token.Text));
+                parameters.Add(Expression.Parameter(typeof(double), token.Text));
                 token = NextToken();
                 while (token.Kind == TokenKind.Comma)
                 {
@@ -217,7 +217,7 @@ namespace IronRabbit.Compiler
                     if (token.Kind != TokenKind.Identifier)
                         throw new CompilerException(_tokenizer.Position, token.Text);
 
-                    parameters.Add(Expression.Parameter(token.Text));
+                    parameters.Add(Expression.Parameter(typeof(double), token.Text));
                     token = NextToken();
                 }
 

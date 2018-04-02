@@ -19,7 +19,7 @@ namespace IronRabbit.Expressions
         public string MethodName { get; }
         public ReadOnlyCollection<Expression> Arguments { get; }
 
-        private LambdaExpression GetLambda(RabbitDomain domain)
+        internal LambdaExpression GetLambda(RabbitDomain domain)
         {
             LambdaExpression lambda;
             if (domain != null)
@@ -34,7 +34,7 @@ namespace IronRabbit.Expressions
             return lambda;
         }
 
-        public override decimal Eval(RuntimeContext context)
+        public override double Eval(RuntimeContext context)
         {
             if (context == null)
                 throw new ArgumentNullException(nameof(context));

@@ -13,12 +13,12 @@ namespace IronRabbit.Expressions
 
         public Expression Operand { get; }
 
-        public override decimal Eval(RuntimeContext context)
+        public override double Eval(RuntimeContext context)
         {
             if (context == null)
                 throw new ArgumentNullException(nameof(context));
 
-            decimal value = Operand.Eval(context);
+            double value = Operand.Eval(context);
             switch (NodeType)
             {
                 case ExpressionType.Negate:
