@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.IO;
 using System.Reflection;
+using IronRabbit.Compiler;
 using IronRabbit.Expressions;
 using IronRabbit.Extern;
 
@@ -41,6 +42,34 @@ namespace IronRabbit
             SystemLambdaExpression lambda;
             _systemFunctions.TryGetValue(name, out lambda);
             return lambda;
+        }
+
+        public static LambdaExpression CompileFromSource(string source)
+        {
+            if (source == null)
+                throw new ArgumentNullException(nameof(source));
+
+            using (var reader = new StringReader(source))
+            {
+                var tokenizer = new Tokenizer(reader);
+                var parser = new Parser(tokenizer);
+                return parser.Parse();
+            }
+        }
+        public static LambdaExpression CompileFromFile(string path)
+        {
+            if (path == null)
+                throw new ArgumentNullException(nameof(path));
+
+            using (var stream = new FileStream(path, FileMode.Open, FileAccess.Read))
+            {
+                using (var reader = new StreamReader(stream, System.Text.Encoding.UTF8))
+                {
+                    var tokenizer = new Tokenizer(reader);
+                    var parser = new Parser(tokenizer);
+                    return parser.Parse();
+                }
+            }
         }
     }
 }

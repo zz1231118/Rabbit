@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using IronRabbit.Compiler;
 using IronRabbit.Expressions;
 
 namespace IronRabbit
@@ -43,33 +41,20 @@ namespace IronRabbit
             if (source == null)
                 throw new ArgumentNullException(nameof(source));
 
-            using (var reader = new StringReader(source))
-            {
-                var tokenizer = new Tokenizer(reader);
-                var parser = new Parser(tokenizer);
-                var lambda = parser.Parse();
-                lambda.Domain = this;
-                Register(lambda);
-                return lambda;
-            }
+            var lambda = Rabbit.CompileFromSource(source);
+            lambda.Domain = this;
+            Register(lambda);
+            return lambda;
         }
         public LambdaExpression CompileFromFile(string path)
         {
             if (path == null)
                 throw new ArgumentNullException(nameof(path));
 
-            using (var stream = new FileStream(path, FileMode.Open, FileAccess.Read))
-            {
-                using (var reader = new StreamReader(stream, System.Text.Encoding.UTF8))
-                {
-                    var tokenizer = new Tokenizer(reader);
-                    var parser = new Parser(tokenizer);
-                    var lambda = parser.Parse();
-                    lambda.Domain = this;
-                    Register(lambda);
-                    return lambda;
-                }
-            }
+            var lambda = Rabbit.CompileFromFile(path);
+            lambda.Domain = this;
+            Register(lambda);
+            return lambda;
         }
     }
 }
