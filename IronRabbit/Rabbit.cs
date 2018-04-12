@@ -8,7 +8,7 @@ using IronRabbit.Extern;
 
 namespace IronRabbit
 {
-    internal class Rabbit
+    public class Rabbit
     {
         private static Dictionary<string, SystemLambdaExpression> _systemFunctions = new Dictionary<string, SystemLambdaExpression>();
 

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq.Expressions;
 using IronRabbit.Runtime;
 
 namespace IronRabbit.Expressions
@@ -38,7 +37,7 @@ namespace IronRabbit.Expressions
                 case ExpressionType.Power:
                     return Math.Pow(lh, rh);
                 default:
-                    throw new RuntimeException("unknown operator char:" + NodeType.ToString());
+                    throw new RuntimeException("unknown operator:" + NodeType.ToString());
             }
         }
     }

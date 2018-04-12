@@ -144,7 +144,7 @@ namespace IronRabbit.Compiler
             _tokenStartIndex = _tokenEndIndex;
             _tokenEnd = -1;
         }
-        internal string GetTokenString()
+        private string GetTokenString()
         {
             return new string(_buffer, _start, _tokenEnd - _start);
         }
