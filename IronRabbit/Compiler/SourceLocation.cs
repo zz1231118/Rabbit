@@ -69,7 +69,7 @@ namespace IronRabbit.Compiler
             {
                 return -1;
             }
-            if (right > left)
+            if (left > right)
             {
                 return 1;
             }

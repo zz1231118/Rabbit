@@ -96,15 +96,12 @@ namespace IronRabbit.Compiler
         private IList<Expression> ParseArguments()
         {
             List<Expression> list = new List<Expression>();
-            Token token = PeekToken();
-            if (token.Kind != TokenKind.RightParen)
+            if (PeekToken().Kind != TokenKind.RightParen)
             {
-                list.Add(ParseExpression());
-                token = PeekToken();
-                while (MaybeEat(TokenKind.Comma))
+                do
                 {
                     list.Add(ParseExpression());
-                }
+                } while (MaybeEat(TokenKind.Comma));
             }
 
             return list;
@@ -205,23 +202,16 @@ namespace IronRabbit.Compiler
             var parameters = new List<ParameterExpression>();
             if (!MaybeEat(TokenKind.RightParen))
             {
-                token = NextToken();
-                if (token.Kind != TokenKind.Identifier)
-                    throw new CompilerException(_tokenizer.Position, token.Text);
-
-                parameters.Add(Expression.Parameter(typeof(double), token.Text));
-                token = NextToken();
-                while (token.Kind == TokenKind.Comma)
+                do
                 {
                     token = NextToken();
                     if (token.Kind != TokenKind.Identifier)
                         throw new CompilerException(_tokenizer.Position, token.Text);
 
                     parameters.Add(Expression.Parameter(typeof(double), token.Text));
-                    token = NextToken();
-                }
+                } while (MaybeEat(TokenKind.Comma));
 
-                if (token.Kind != TokenKind.RightParen)
+                if (!MaybeEat(TokenKind.RightParen))
                     throw new CompilerException(_tokenizer.Position, token.Text);
             }
             if (!MaybeEat(TokenKind.Assign))
