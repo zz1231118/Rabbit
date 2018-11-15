@@ -88,6 +88,19 @@ namespace IronRabbit.Compiler
                     return ExpressionType.Modulo;
                 case TokenKind.Power:
                     return ExpressionType.Power;
+
+                case TokenKind.LessThan:
+                    return ExpressionType.LessThan;
+                case TokenKind.LessThanOrEqual:
+                    return ExpressionType.LessThanOrEqual;
+                case TokenKind.Equal:
+                    return ExpressionType.Equal;
+                case TokenKind.GreaterThanOrEqual:
+                    return ExpressionType.GreaterThanOrEqual;
+                case TokenKind.GreaterThan:
+                    return ExpressionType.GreaterThan;
+                case TokenKind.NotEqual:
+                    return ExpressionType.NotEqual;
                 default:
                     throw new CompilerException(_tokenizer.Position, string.Format("operator TokenKind:{0} error!", kind.ToString()));
             }
@@ -162,6 +175,23 @@ namespace IronRabbit.Compiler
                             break;
                     }
                     break;
+                case TokenKind.Not:
+                    return Expression.Not(ParseExpression()); 
+                case TokenKind.IF:
+                    if (!MaybeEat(TokenKind.LeftParen))
+                        throw new CompilerException(_tokenizer.Position, PeekToken().Text);
+                    var test = ParseExpression();
+                    if (!MaybeEat(TokenKind.Comma))
+                        throw new CompilerException(_tokenizer.Position, PeekToken().Text);
+                    var trueExpre = ParseExpression();
+                    if (!MaybeEat(TokenKind.Comma))
+                        throw new CompilerException(_tokenizer.Position, PeekToken().Text);
+                    var falseExpre = ParseExpression();
+                    if (!MaybeEat(TokenKind.RightParen))
+                        throw new CompilerException(_tokenizer.Position, PeekToken().Text);
+
+                    expr = Expression.Condition(test, trueExpre, falseExpre);
+                    break;
             }
 
             return expr;
@@ -172,19 +202,19 @@ namespace IronRabbit.Compiler
             while (true)
             {
                 Token token = PeekToken();
-                if (!(token is OperatorToken operToken))
+                if (token is OperatorToken opToken)
                 {
-                    break;
-                }
-                if (operToken.Precedence < precedence)
-                {
-                    break;
+                    if (opToken.Precedence >= precedence)
+                    {
+                        NextToken();
+                        Expression rightOperand = ParseExpression(checked((byte)(opToken.Precedence + 1)));
+                        ExpressionType @operator = GetBinaryOperator(token.Kind);
+                        leftOperand = new BinaryExpression(@operator, leftOperand, rightOperand);
+                        continue;
+                    }
                 }
 
-                NextToken();
-                Expression rightOperand = ParseExpression(checked((byte)(operToken.Precedence + 1)));
-                ExpressionType @operator = GetBinaryOperator(token.Kind);
-                leftOperand = new BinaryExpression(@operator, leftOperand, rightOperand);
+                break;
             }
 
             return leftOperand;

@@ -15,7 +15,7 @@ namespace IronRabbit.Expressions
         public Type Type { get; }
         public string Name { get; }
 
-        internal static double Access(RuntimeContext context, string name)
+        internal static object Access(RuntimeContext context, string name)
         {
             var value = context.Access(name);
             if (value == null)
@@ -23,13 +23,20 @@ namespace IronRabbit.Expressions
 
             return value.Value;
         }
-
-        public override double Eval(RuntimeContext context)
+        internal static T Access<T>(RuntimeContext context, string name)
+        {
+            return (T)Access(context, name);
+        }
+        public override object Eval(RuntimeContext context)
         {
             if (context == null)
                 throw new ArgumentNullException(nameof(context));
 
             return Access(context, Name);
+        }
+        public override string ToString()
+        {
+            return Name;
         }
     }
 }

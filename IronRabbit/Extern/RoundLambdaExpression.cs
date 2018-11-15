@@ -13,10 +13,10 @@ namespace IronRabbit.Extern
 
         class BodyExpression : Expression
         {
-            public override double Eval(RuntimeContext context)
+            public override object Eval(RuntimeContext context)
             {
-                double d = ParameterExpression.Access(context, "d");
-                double decimals = ParameterExpression.Access(context, "decimals");
+                double d = ParameterExpression.Access<double>(context, "d");
+                double decimals = ParameterExpression.Access<double>(context, "decimals");
                 return Math.Round(d, (int)decimals);
             }
         }

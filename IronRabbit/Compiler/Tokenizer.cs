@@ -273,6 +273,10 @@ namespace IronRabbit.Compiler
                     case 32://' '
                         num = SkipWhiteSpace();
                         continue;
+                    case 33://!
+                        var notToken = NextChar(61) ? Tokens.NotEqualToken : Tokens.NotToken;
+                        MarkTokenEnd();
+                        return notToken;
                     case 37://'%'
                         MarkTokenEnd();
                         return Tokens.ModToken;
@@ -319,9 +323,18 @@ namespace IronRabbit.Compiler
                     case 59://';'
                         MarkTokenEnd();
                         return Tokens.NewLineToken;
-                    case 61://'='
+                    case 60://<
+                        var lessToken = NextChar(61) ? Tokens.LessThanOrEqualToken : Tokens.LessThanToken;
                         MarkTokenEnd();
-                        return Tokens.AssignToken;
+                        return lessToken;
+                    case 61://'='
+                        var assignOrEqualToken = NextChar(61) ? Tokens.EqualToken : Tokens.AssignToken;
+                        MarkTokenEnd();
+                        return assignOrEqualToken;
+                    case 62://>
+                        var greaterToken = NextChar(61) ? Tokens.GreaterThanOrEqualToken : Tokens.GreaterThanToken;
+                        MarkTokenEnd();
+                        return greaterToken;
                     case 91://'['
                         MarkTokenEnd();
                         return Tokens.LeftBracketToken;
@@ -331,6 +344,14 @@ namespace IronRabbit.Compiler
                     case 94://'^'
                         MarkTokenEnd();
                         return Tokens.PowerToken;
+                    case 105://i
+                        if (NextChar(102))
+                        {
+                            MarkTokenEnd();
+                            return Tokens.IFToken;
+                        }
+
+                        return ReadName();
                     default:
                         return ReadName();
                 }

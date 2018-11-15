@@ -6,7 +6,7 @@ namespace IronRabbit.Runtime
     public class RuntimeContext
     {
         private RuntimeContext _parent;
-        private Dictionary<string, double> _variables = new Dictionary<string, double>();
+        private Dictionary<string, RuntimeVariable> _variables = new Dictionary<string, RuntimeVariable>();
 
         public RuntimeContext()
         { }
@@ -19,14 +19,14 @@ namespace IronRabbit.Runtime
             Domain = parent.Domain;
         }
 
-        public double this[string name]
+        public object this[string name]
         {
             set
             {
                 if (name == null)
                     throw new ArgumentNullException(nameof(name));
 
-                _variables[name] = value;
+                _variables[name] = new RuntimeVariable(value);
             }
         }
         internal RabbitDomain Domain { get; set; }
@@ -36,14 +36,14 @@ namespace IronRabbit.Runtime
             return _variables.ContainsKey(name) ? this : _parent?.FindCurrentOrParent(name);
         }
 
-        public void Variable(string name, double value)
+        public void Variable(string name, object value)
         {
             if (name == null)
                 throw new ArgumentNullException(nameof(name));
 
-            _variables[name] = value;
+            _variables[name] = new RuntimeVariable(value);
         }
-        public double? Assign(string name, double value)
+        public RuntimeVariable Assign(string name, double value)
         {
             if (name == null)
                 throw new ArgumentNullException(nameof(name));
@@ -51,13 +51,13 @@ namespace IronRabbit.Runtime
             var context = FindCurrentOrParent(name);
             if (context == null)
                 return null;
-            if (!context._variables.ContainsKey(name))
+            if (!context._variables.TryGetValue(name, out RuntimeVariable rv))
                 return null;
 
-            context._variables[name] = value;
-            return value;
+            rv.SetValue(value);
+            return rv;
         }
-        public double? Access(string name)
+        public RuntimeVariable Access(string name)
         {
             if (name == null)
                 throw new ArgumentNullException(nameof(name));
@@ -65,10 +65,30 @@ namespace IronRabbit.Runtime
             var context = FindCurrentOrParent(name);
             if (context == null)
                 return null;
-            if (!context._variables.TryGetValue(name, out double value))
+            if (!context._variables.TryGetValue(name, out RuntimeVariable rv))
                 return null;
 
-            return value;
+            return rv;
+        }
+
+        public class RuntimeVariable
+        {
+            public RuntimeVariable()
+            { }
+            public RuntimeVariable(object value)
+            {
+                Value = value;
+                IsAssigned = true;
+            }
+
+            public object Value { get; set; }
+            public bool IsAssigned { get; set; }
+
+            public void SetValue(object value)
+            {
+                Value = value;
+                IsAssigned = true;
+            }
         }
     }
 }

@@ -43,6 +43,7 @@
     <Compile Include="Compiler\IndexSpan.cs" />
     <Compile Include="Compiler\Parser.cs" />
     <Compile Include="Compiler\SourceLocation.cs" />
+    <Compile Include="Expressions\ConditionalExpression.cs" />
     <Compile Include="Expressions\LambdaCompiler.cs" />
     <Compile Include="Expressions\LambdaCompilerException.cs" />
     <Compile Include="Expressions\SystemLambdaExpression.cs" />

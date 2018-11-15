@@ -22,5 +22,15 @@
         Parameter,
         Lambda,
         MethodCall,
+
+        LessThan,
+        LessThanOrEqual,
+        Equal,
+        GreaterThanOrEqual,
+        GreaterThan,
+        NotEqual,
+
+        Not,
+        Conditional,
     }
 }

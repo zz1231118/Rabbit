@@ -19,5 +19,15 @@
         public static readonly Token RightParenToken = Token.Symbol(TokenKind.RightParen, ")");
         public static readonly Token LeftBracketToken = Token.Symbol(TokenKind.LeftBracket, "[");
         public static readonly Token RightBracketToken = Token.Symbol(TokenKind.RightBracket, "]");
+
+        public static readonly Token NotToken = Token.Symbol(TokenKind.Not, "!");
+        public static readonly Token LessThanToken = Token.Operator(TokenKind.LessThan, "<", 2);
+        public static readonly Token LessThanOrEqualToken = Token.Operator(TokenKind.LessThanOrEqual, "<=", 2);
+        public static readonly Token EqualToken = Token.Operator(TokenKind.Equal, "==", 1);
+        public static readonly Token GreaterThanOrEqualToken = Token.Operator(TokenKind.GreaterThanOrEqual, ">=", 2);
+        public static readonly Token GreaterThanToken = Token.Operator(TokenKind.GreaterThan, ">", 2);
+        public static readonly Token NotEqualToken = Token.Operator(TokenKind.NotEqual, "!=", 1);
+
+        public static readonly Token IFToken = Token.Symbol(TokenKind.IF, "if");
     }
 }

@@ -15,7 +15,8 @@ namespace IronRabbit.Expressions
         }
 
         public virtual ExpressionType NodeType { get; }
-
+//System.Linq.Expressions.Expression exp;
+//System.Linq.Expressions.ConstantExpression s;
         public static ParameterExpression Parameter(Type type, string name)
         {
             if (name == null)
@@ -66,7 +67,7 @@ namespace IronRabbit.Expressions
 
             return new BinaryExpression(ExpressionType.Assign, left, right);
         }
-        public static ConstantExpression Constant(double value)
+        public static ConstantExpression Constant(object value)
         {
             return new ConstantExpression(value);
         }
@@ -190,10 +191,28 @@ namespace IronRabbit.Expressions
 
             return new LambdaExpression(name, body, parameters.ToArray());
         }
-
-        public virtual double Eval(RuntimeContext context)
+        public static UnaryExpression Not(Expression expression)
         {
-            return default(double);
+            if (expression == null)
+                throw new ArgumentNullException(nameof(expression));
+
+            return new UnaryExpression(ExpressionType.Not, expression);
+        }
+        public static ConditionalExpression Condition(Expression condition, Expression trueExpression, Expression falseExpression)
+        {
+            if (condition == null)
+                throw new ArgumentNullException(nameof(condition));
+            if (trueExpression == null)
+                throw new ArgumentNullException(nameof(trueExpression));
+            if (falseExpression == null)
+                throw new ArgumentNullException(nameof(falseExpression));
+
+            return new ConditionalExpression(condition, trueExpression, falseExpression);
+        }
+
+        public virtual object Eval(RuntimeContext context)
+        {
+            throw new NotSupportedException();
         }
     }
 }

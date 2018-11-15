@@ -13,9 +13,9 @@ namespace IronRabbit.Extern
 
         class BodyExpression : Expression
         {
-            public override double Eval(RuntimeContext context)
+            public override object Eval(RuntimeContext context)
             {
-                return Math.Cosh(ParameterExpression.Access(context, "x"));
+                return Math.Cosh(ParameterExpression.Access<double>(context, "x"));
             }
         }
     }

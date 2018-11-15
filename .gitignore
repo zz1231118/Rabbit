@@ -3,3 +3,7 @@
 ################################################################################
 
 /.vs/Rabbit
+/Simple/obj
+/Simple/bin
+/IronRabbit/obj
+/IronRabbit/bin

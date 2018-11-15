@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Text;
 using IronRabbit.Runtime;
 
 namespace IronRabbit.Expressions
@@ -34,7 +35,7 @@ namespace IronRabbit.Expressions
             return lambda;
         }
 
-        public override double Eval(RuntimeContext context)
+        public override object Eval(RuntimeContext context)
         {
             if (context == null)
                 throw new ArgumentNullException(nameof(context));
@@ -62,6 +63,25 @@ namespace IronRabbit.Expressions
             {
                 throw new NotSupportedException();
             }
+        }
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+            sb.Append(MethodName).Append('(');
+            using (var e = Arguments.GetEnumerator())
+            {
+                if (e.MoveNext())
+                {
+                    sb.Append(e.Current.ToString());
+                    while (e.MoveNext())
+                    {
+                        sb.Append(',');
+                        sb.Append(e.Current.ToString());
+                    }
+                }
+            }
+            sb.Append(')');
+            return sb.ToString();
         }
     }
 }

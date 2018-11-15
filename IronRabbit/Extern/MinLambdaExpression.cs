@@ -13,10 +13,10 @@ namespace IronRabbit.Extern
 
         class BodyExpression : Expression
         {
-            public override double Eval(RuntimeContext context)
+            public override object Eval(RuntimeContext context)
             {
-                double lh = ParameterExpression.Access(context, "lh");
-                double rh = ParameterExpression.Access(context, "rh");
+                double lh = ParameterExpression.Access<double>(context, "lh");
+                double rh = ParameterExpression.Access<double>(context, "rh");
                 return Math.Min(lh, rh);
             }
         }
