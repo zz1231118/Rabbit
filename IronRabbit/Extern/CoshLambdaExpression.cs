@@ -8,7 +8,8 @@ namespace IronRabbit.Extern
     internal class CoshLambdaExpression : SystemLambdaExpression
     {
         public CoshLambdaExpression()
-            : base(typeof(Math).GetMethod("Cosh", new Type[] { typeof(double) }), "cosh", new BodyExpression(), Expression.Parameter(typeof(double), "x"))
+            : base(typeof(Math).GetMethod(nameof(Math.Cosh), new Type[] { typeof(double) }), "cosh", new BodyExpression(), 
+                  Expression.Parameter(typeof(double), "x"))
         { }
 
         class BodyExpression : Expression

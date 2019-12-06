@@ -8,7 +8,9 @@ namespace IronRabbit.Extern
     internal class MinLambdaExpression : SystemLambdaExpression
     {
         public MinLambdaExpression()
-            : base(typeof(Math).GetMethod("Min", new Type[] { typeof(double), typeof(double) }), "min", new BodyExpression(), Expression.Parameter(typeof(double), "lh"), Expression.Parameter(typeof(double), "rh"))
+            : base(typeof(Math).GetMethod(nameof(Math.Min), new Type[] { typeof(double), typeof(double) }), "min", new BodyExpression(), 
+                  Expression.Parameter(typeof(double), "lh"), 
+                  Expression.Parameter(typeof(double), "rh"))
         { }
 
         class BodyExpression : Expression

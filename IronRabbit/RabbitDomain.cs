@@ -6,18 +6,18 @@ namespace IronRabbit
 {
     public class RabbitDomain
     {
-        private Dictionary<string, LambdaExpression> _functions = new Dictionary<string, LambdaExpression>();
+        private Dictionary<string, LambdaExpression> functions = new Dictionary<string, LambdaExpression>();
 
         public void Register(LambdaExpression lambda)
         {
             if (lambda == null)
                 throw new ArgumentNullException(nameof(lambda));
 
-            _functions[lambda.Name] = lambda;
+            functions[lambda.Name] = lambda;
         }
         public bool TryGetLambda(string name, out LambdaExpression lambda)
         {
-            if (_functions.TryGetValue(name, out lambda))
+            if (functions.TryGetValue(name, out lambda))
             {
                 return true;
             }

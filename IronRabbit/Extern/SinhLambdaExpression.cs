@@ -8,7 +8,8 @@ namespace IronRabbit.Extern
     internal class SinhLambdaExpression : SystemLambdaExpression
     {
         public SinhLambdaExpression()
-            : base(typeof(Math).GetMethod("Sinh", new Type[] { typeof(double) }), "sinh", new BodyExpression(), Expression.Parameter(typeof(double), "x"))
+            : base(typeof(Math).GetMethod(nameof(Math.Sinh), new Type[] { typeof(double) }), "sinh", new BodyExpression(), 
+                  Expression.Parameter(typeof(double), "x"))
         { }
 
         class BodyExpression : Expression

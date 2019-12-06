@@ -23,14 +23,38 @@
         Lambda,
         MethodCall,
 
+        /// <summary>
+        /// &lt;
+        /// </summary>
         LessThan,
+        /// <summary>
+        /// &lt;=
+        /// </summary>
         LessThanOrEqual,
+        /// <summary>
+        /// ==
+        /// </summary>
         Equal,
+        /// <summary>
+        /// &gt;=
+        /// </summary>
         GreaterThanOrEqual,
+        /// <summary>
+        /// &gt;
+        /// </summary>
         GreaterThan,
+        /// <summary>
+        /// !=
+        /// </summary>
         NotEqual,
 
+        /// <summary>
+        /// !
+        /// </summary>
         Not,
+        /// <summary>
+        /// IF
+        /// </summary>
         Conditional,
     }
 }

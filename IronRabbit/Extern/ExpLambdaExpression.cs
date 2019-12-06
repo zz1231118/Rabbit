@@ -8,7 +8,8 @@ namespace IronRabbit.Extern
     internal class ExpLambdaExpression : SystemLambdaExpression
     {
         public ExpLambdaExpression()
-            : base(typeof(Math).GetMethod("Exp", new Type[] { typeof(double) }), "exp", new BodyExpression(), Expression.Parameter(typeof(double), "x"))
+            : base(typeof(Math).GetMethod(nameof(Math.Exp), new Type[] { typeof(double) }), "exp", new BodyExpression(), 
+                  Expression.Parameter(typeof(double), "x"))
         { }
 
         class BodyExpression : Expression

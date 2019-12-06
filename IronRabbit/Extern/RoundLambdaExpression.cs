@@ -8,7 +8,9 @@ namespace IronRabbit.Extern
     internal class RoundLambdaExpression : SystemLambdaExpression
     {
         public RoundLambdaExpression()
-            : base(typeof(Math).GetMethod("Round", new Type[] { typeof(double), typeof(int) }), "round", new BodyExpression(), Expression.Parameter(typeof(double), "x"), Expression.Parameter(typeof(double), "decimals"))
+            : base(typeof(Math).GetMethod(nameof(Math.Round), new Type[] { typeof(double), typeof(int) }), "round", new BodyExpression(), 
+                  Expression.Parameter(typeof(double), "d"), 
+                  Expression.Parameter(typeof(double), "decimals"))
         { }
 
         class BodyExpression : Expression

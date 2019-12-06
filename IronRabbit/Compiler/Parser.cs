@@ -7,16 +7,16 @@ namespace IronRabbit.Compiler
 {
     internal class Parser
     {
-        private readonly Tokenizer _tokenizer;
-        private TokenWithSpan _lookahead;
-        private TokenWithSpan _token;
+        private readonly Tokenizer tokenizer;
+        private TokenWithSpan lookahead;
+        private TokenWithSpan token;
 
         public Parser(Tokenizer tokenizer)
         {
             if (tokenizer == null)
                 throw new ArgumentNullException(nameof(tokenizer));
 
-            _tokenizer = tokenizer;
+            this.tokenizer = tokenizer;
             Initialize();
         }
 
@@ -26,17 +26,17 @@ namespace IronRabbit.Compiler
         }
         private Token NextToken()
         {
-            _token = _lookahead;
+            token = lookahead;
             FetchLookahead();
-            return _token.Token;
+            return token.Token;
         }
         private Token PeekToken()
         {
-            return this._lookahead.Token;
+            return this.lookahead.Token;
         }
         private void FetchLookahead()
         {
-            _lookahead = new TokenWithSpan(_tokenizer.NextToken(), _tokenizer.TokenSpan);
+            lookahead = new TokenWithSpan(tokenizer.NextToken(), tokenizer.TokenSpan);
         }
         private bool PeekToken(TokenKind kind)
         {
@@ -102,7 +102,7 @@ namespace IronRabbit.Compiler
                 case TokenKind.NotEqual:
                     return ExpressionType.NotEqual;
                 default:
-                    throw new CompilerException(_tokenizer.Position, string.Format("operator TokenKind:{0} error!", kind.ToString()));
+                    throw new CompilerException(tokenizer.Position, string.Format("operator TokenKind:{0} error!", kind.ToString()));
             }
         }
 
@@ -134,7 +134,7 @@ namespace IronRabbit.Compiler
                 case TokenKind.LeftParen:
                     expr = ParseExpression();
                     if (!MaybeEat(TokenKind.RightParen))
-                        throw new CompilerException(_tokenizer.Position, PeekToken().Text);
+                        throw new CompilerException(tokenizer.Position, PeekToken().Text);
                     break;
                 case TokenKind.Identifier:
                     switch (PeekToken().Kind)
@@ -143,7 +143,7 @@ namespace IronRabbit.Compiler
                             NextToken();
                             expr = Expression.Call(null, token.Text, ParseArguments());
                             if (!MaybeEat(TokenKind.RightParen))
-                                throw new CompilerException(_tokenizer.Position, PeekToken().Text);
+                                throw new CompilerException(tokenizer.Position, PeekToken().Text);
 
                             break;
                         case TokenKind.Dot:
@@ -152,12 +152,12 @@ namespace IronRabbit.Compiler
                             {
                                 token = NextToken();
                                 if (token.Kind != TokenKind.Identifier)
-                                    throw new CompilerException(_tokenizer.Position, PeekToken().Text);
+                                    throw new CompilerException(tokenizer.Position, PeekToken().Text);
                                 if (PeekToken().Kind == TokenKind.LeftParen)
                                 {
                                     expr = Expression.Call(expr, token.Text, ParseArguments());
                                     if (!MaybeEat(TokenKind.RightParen))
-                                        throw new CompilerException(_tokenizer.Position, PeekToken().Text);
+                                        throw new CompilerException(tokenizer.Position, PeekToken().Text);
                                     break;
                                 }
 
@@ -167,7 +167,7 @@ namespace IronRabbit.Compiler
                             {
                                 expr = Expression.Call(expr, token.Text, ParseArguments());
                                 if (!MaybeEat(TokenKind.RightParen))
-                                    throw new CompilerException(_tokenizer.Position, PeekToken().Text);
+                                    throw new CompilerException(tokenizer.Position, PeekToken().Text);
                             }
                             break;
                         default:
@@ -179,16 +179,16 @@ namespace IronRabbit.Compiler
                     return Expression.Not(ParseExpression()); 
                 case TokenKind.IF:
                     if (!MaybeEat(TokenKind.LeftParen))
-                        throw new CompilerException(_tokenizer.Position, PeekToken().Text);
+                        throw new CompilerException(tokenizer.Position, PeekToken().Text);
                     var test = ParseExpression();
                     if (!MaybeEat(TokenKind.Comma))
-                        throw new CompilerException(_tokenizer.Position, PeekToken().Text);
+                        throw new CompilerException(tokenizer.Position, PeekToken().Text);
                     var trueExpre = ParseExpression();
                     if (!MaybeEat(TokenKind.Comma))
-                        throw new CompilerException(_tokenizer.Position, PeekToken().Text);
+                        throw new CompilerException(tokenizer.Position, PeekToken().Text);
                     var falseExpre = ParseExpression();
                     if (!MaybeEat(TokenKind.RightParen))
-                        throw new CompilerException(_tokenizer.Position, PeekToken().Text);
+                        throw new CompilerException(tokenizer.Position, PeekToken().Text);
 
                     expr = Expression.Condition(test, trueExpre, falseExpre);
                     break;
@@ -223,29 +223,29 @@ namespace IronRabbit.Compiler
         {
             Token token = NextToken();
             if (token.Kind != TokenKind.Identifier)
-                throw new CompilerException(_tokenizer.Position, token.Text);
+                throw new CompilerException(tokenizer.Position, token.Text);
 
             string name = token.Text;
-            if (!MaybeEat(TokenKind.LeftParen))
-                throw new CompilerException(_tokenizer.Position, PeekToken().Text);
-
             var parameters = new List<ParameterExpression>();
-            if (!MaybeEat(TokenKind.RightParen))
+            if (MaybeEat(TokenKind.LeftParen))
             {
-                do
-                {
-                    token = NextToken();
-                    if (token.Kind != TokenKind.Identifier)
-                        throw new CompilerException(_tokenizer.Position, token.Text);
-
-                    parameters.Add(Expression.Parameter(typeof(double), token.Text));
-                } while (MaybeEat(TokenKind.Comma));
-
                 if (!MaybeEat(TokenKind.RightParen))
-                    throw new CompilerException(_tokenizer.Position, token.Text);
+                {
+                    do
+                    {
+                        token = NextToken();
+                        if (token.Kind != TokenKind.Identifier)
+                            throw new CompilerException(tokenizer.Position, token.Text);
+
+                        parameters.Add(Expression.Parameter(typeof(double), token.Text));
+                    } while (MaybeEat(TokenKind.Comma));
+
+                    if (!MaybeEat(TokenKind.RightParen))
+                        throw new CompilerException(tokenizer.Position, token.Text);
+                }
             }
             if (!MaybeEat(TokenKind.Assign))
-                throw new CompilerException(_tokenizer.Position, PeekToken().Text);
+                throw new CompilerException(tokenizer.Position, PeekToken().Text);
 
             Expression body = ParseExpression();
             return Expression.Lambda(name, body, parameters);

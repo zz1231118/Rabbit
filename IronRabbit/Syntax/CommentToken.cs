@@ -2,14 +2,14 @@
 {
     internal class CommentToken : Token
     {
-        private string _comment;
+        private string comment;
 
         public CommentToken(string comment)
             : base(TokenKind.Comment)
         {
-            _comment = comment;
+            this.comment = comment;
         }
 
-        public override string Text => _comment;
+        public override string Text => comment;
     }
 }

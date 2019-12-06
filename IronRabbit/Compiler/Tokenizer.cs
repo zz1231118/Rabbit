@@ -9,33 +9,33 @@ namespace IronRabbit.Compiler
     {
         private const int DefaultBufferCapacity = 1024;
 
-        private TextReader _reader;
-        private char[] _buffer;
-        private int _start;
-        private int _end;
-        private int _position;
-        private bool _endOfStream;
-        private bool _multiEolns;
-        private int _tokenEnd;
-        private int _tokenStartIndex;
-        private int _tokenEndIndex;
-        private List<int> _newLineLocations;
-        private SourceLocation _initialLocation;
+        private TextReader reader;
+        private char[] buffer;
+        private int start;
+        private int end;
+        private int position;
+        private bool endOfStream;
+        private bool multiEolns;
+        private int tokenEnd;
+        private int tokenStartIndex;
+        private int tokenEndIndex;
+        private List<int> newLineLocations;
+        private SourceLocation initialLocation;
 
         public Tokenizer(TextReader reader)
         {
             if (reader == null)
                 throw new ArgumentNullException(nameof(reader));
 
-            _reader = reader;
+            this.reader = reader;
             Initialize(DefaultBufferCapacity);
         }
 
-        public bool EndOfStream => _endOfStream;
-        public int Index => _tokenStartIndex + Math.Min(_position, _end) - _start;
+        public bool EndOfStream => endOfStream;
+        public int Index => tokenStartIndex + Math.Min(position, end) - start;
         public SourceLocation Position => IndexToLocation(Index);
-        public IndexSpan TokenSpan => new IndexSpan(_tokenStartIndex, _tokenEndIndex - _tokenStartIndex);
-        private int TokenLength => _tokenEnd - _start;
+        public IndexSpan TokenSpan => new IndexSpan(tokenStartIndex, tokenEndIndex - tokenStartIndex);
+        private int TokenLength => tokenEnd - start;
 
         private static void ResizeInternal(ref char[] array, int newSize, int start, int count)
         {
@@ -53,44 +53,44 @@ namespace IronRabbit.Compiler
         }
         private void RefillBuffer()
         {
-            if (_end == _buffer.Length)
+            if (end == buffer.Length)
             {
-                int newSize = Math.Max(Math.Max((_end - _start) * 2, _buffer.Length), _position);
-                ResizeInternal(ref _buffer, newSize, _start, _end - _start);
-                _end -= _start;
-                _position -= _start;
-                _start = 0;
+                int newSize = Math.Max(Math.Max((end - start) * 2, buffer.Length), position);
+                ResizeInternal(ref buffer, newSize, start, end - start);
+                end -= start;
+                position -= start;
+                start = 0;
                 //_bufferResized = true;
             }
 
-            _end  += _reader.Read(_buffer, _end, _buffer.Length - _end);
+            end  += reader.Read(buffer, end, buffer.Length - end);
         }
         private void Initialize(int bufferCapacity)
         {
-            _multiEolns = true;
-            _buffer = new char[bufferCapacity];
-            _newLineLocations = new List<int>();
-            _initialLocation = SourceLocation.MinValue;
+            multiEolns = true;
+            buffer = new char[bufferCapacity];
+            newLineLocations = new List<int>();
+            initialLocation = SourceLocation.MinValue;
         }
         private int Peek()
         {
-            if (_position >= _end)
+            if (position >= end)
             {
                 RefillBuffer();
-                if (_position >= _end)
+                if (position >= end)
                 {
-                    _endOfStream = true;
+                    endOfStream = true;
                     return -1;
                 }
             }
 
-            return _buffer[_position];
+            return buffer[position];
         }
         private bool NextChar(int ch)
         {
             if (Peek() == ch)
             {
-                _position++;
+                position++;
                 return true;
             }
             return false;
@@ -98,7 +98,7 @@ namespace IronRabbit.Compiler
         private int NextChar()
         {
             int result = Peek();
-            _position++;
+            position++;
             return result;
         }
         private int ReadLine()
@@ -110,14 +110,14 @@ namespace IronRabbit.Compiler
             } while (num != -1 && !IsEoln(num));
             if (num == 10)
             {
-                _newLineLocations.Add(Index);
+                newLineLocations.Add(Index);
             }
             BufferBack();
             return num;
         }
         private bool IsEoln(int current)
         {
-            return current == 10 || (current == 13 && _multiEolns);
+            return current == 10 || (current == 13 && multiEolns);
         }
         private void BufferBack()
         {
@@ -125,36 +125,36 @@ namespace IronRabbit.Compiler
         }
         private void SeekRelative(int disp)
         {
-            _position += disp;
+            position += disp;
         }
         private void MarkTokenEnd()
         {
-            _tokenEnd = Math.Min(_position, _end);
-            int num = _tokenEnd - _start;
-            _tokenEndIndex = _tokenStartIndex + num;
+            tokenEnd = Math.Min(position, end);
+            int num = tokenEnd - start;
+            tokenEndIndex = tokenStartIndex + num;
         }
         private void DiscardToken()
         {
-            if (_tokenEnd == -1)
+            if (tokenEnd == -1)
             {
                 MarkTokenEnd();
             }
 
-            _start = _tokenEnd;
-            _tokenStartIndex = _tokenEndIndex;
-            _tokenEnd = -1;
+            start = tokenEnd;
+            tokenStartIndex = tokenEndIndex;
+            tokenEnd = -1;
         }
         private string GetTokenString()
         {
-            return new string(_buffer, _start, _tokenEnd - _start);
+            return new string(buffer, start, tokenEnd - start);
         }
         private string GetTokenSubstring(int offset)
         {
-            return GetTokenSubstring(offset, _tokenEnd - _start - offset);
+            return GetTokenSubstring(offset, tokenEnd - start - offset);
         }
         private string GetTokenSubstring(int offset, int length)
         {
-            return new string(_buffer, _start + offset, length);
+            return new string(buffer, start + offset, length);
         }
         private int SkipWhiteSpace()
         {
@@ -171,21 +171,21 @@ namespace IronRabbit.Compiler
         }
         private SourceLocation IndexToLocation(int index)
         {
-            int num = _newLineLocations.BinarySearch(index);
+            int num = newLineLocations.BinarySearch(index);
             if (num < 0)
             {
                 if (num == -1)
                 {
-                    int column = checked(index + _initialLocation.Column);
+                    int column = checked(index + initialLocation.Column);
                     if (TokenLength > 0) column -= TokenLength;
-                    return new SourceLocation(index + _initialLocation.Index, _initialLocation.Line, column);
+                    return new SourceLocation(index + initialLocation.Index, initialLocation.Line, column);
                 }
                 num = ~num - 1;
             }
 
-            int fcolumn = index - _newLineLocations[num] + _initialLocation.Column;
+            int fcolumn = index - newLineLocations[num] + initialLocation.Column;
             if (TokenLength > 0) fcolumn -= TokenLength;
-            return new SourceLocation(index + _initialLocation.Index, num + 1 + _initialLocation.Line, fcolumn);
+            return new SourceLocation(index + initialLocation.Index, num + 1 + initialLocation.Line, fcolumn);
         }
         
         private static Token BadChar(int ch)
@@ -238,7 +238,7 @@ namespace IronRabbit.Compiler
                     num = NextChar();
                     if (num == 10)
                     {
-                        _newLineLocations.Add(Index);
+                        newLineLocations.Add(Index);
                     }
                 } while (!(num == 42 && NextChar(47)));
 
@@ -266,7 +266,7 @@ namespace IronRabbit.Compiler
                     case -1:
                         return Tokens.EndOfFileToken;
                     case 10://'\n'
-                        _newLineLocations.Add(Index);
+                        newLineLocations.Add(Index);
                         num = SkipWhiteSpace();
                         continue;
                     case 13://'\r'

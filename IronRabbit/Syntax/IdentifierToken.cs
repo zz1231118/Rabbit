@@ -2,14 +2,14 @@
 {
     internal class IdentifierToken : Token
     {
-        private string _name;
+        private string name;
 
         public IdentifierToken(string name)
             : base(TokenKind.Identifier)
         {
-            _name = name;
+            this.name = name;
         }
 
-        public override string Text => _name;
+        public override string Text => name;
     }
 }

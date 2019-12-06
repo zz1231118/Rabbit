@@ -8,7 +8,8 @@ namespace IronRabbit.Extern
     internal class TanhLambdaExpression : SystemLambdaExpression
     {
         public TanhLambdaExpression()
-            : base(typeof(Math).GetMethod("Tanh", new Type[] { typeof(double) }), "tanh", new BodyExpression(), Expression.Parameter(typeof(double), "x"))
+            : base(typeof(Math).GetMethod(nameof(Math.Tanh), new Type[] { typeof(double) }), "tanh", new BodyExpression(), 
+                  Expression.Parameter(typeof(double), "x"))
         { }
 
         class BodyExpression : Expression

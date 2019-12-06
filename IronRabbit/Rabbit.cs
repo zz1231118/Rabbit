@@ -10,7 +10,7 @@ namespace IronRabbit
 {
     public class Rabbit
     {
-        private static Dictionary<string, SystemLambdaExpression> _systemFunctions = new Dictionary<string, SystemLambdaExpression>();
+        private static Dictionary<string, SystemLambdaExpression> systemFunctions = new Dictionary<string, SystemLambdaExpression>();
 
         static Rabbit()
         {
@@ -31,16 +31,16 @@ namespace IronRabbit
             if (lambda == null)
                 throw new ArgumentNullException(nameof(lambda));
 
-            _systemFunctions[lambda.Name] = lambda;
+            systemFunctions[lambda.Name] = lambda;
         }
         internal static bool TryGetSystemLambda(string name, out SystemLambdaExpression lambda)
         {
-            return _systemFunctions.TryGetValue(name, out lambda);
+            return systemFunctions.TryGetValue(name, out lambda);
         }
         internal static SystemLambdaExpression GetSystemLambda(string name)
         {
             SystemLambdaExpression lambda;
-            _systemFunctions.TryGetValue(name, out lambda);
+            systemFunctions.TryGetValue(name, out lambda);
             return lambda;
         }
 

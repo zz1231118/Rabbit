@@ -6,15 +6,15 @@ namespace IronRabbit.Expressions
 {
     internal class LambdaCompiler
     {
-        private LambdaExpression _lambda;
-        private List<System.Linq.Expressions.ParameterExpression> _parameters;
+        private LambdaExpression lambda;
+        private List<System.Linq.Expressions.ParameterExpression> parameters;
 
         public LambdaCompiler(LambdaExpression lambda)
         {
             if (lambda == null)
                 throw new ArgumentNullException(nameof(lambda));
 
-            _lambda = lambda;
+            this.lambda = lambda;
         }
 
         private System.Linq.Expressions.Expression EmitExpression(Expression expre)
@@ -67,7 +67,7 @@ namespace IronRabbit.Expressions
             }
             else if (expre is MethodCallExpression mce)
             {
-                var lambda = mce.GetLambda(_lambda.Domain);
+                var lambda = mce.GetLambda(this.lambda.Domain);
                 if (lambda == null)
                     throw new LambdaCompilerException(string.Format("missing method:{0}", mce.MethodName));
                 if (!(lambda is SystemLambdaExpression sle))
@@ -78,12 +78,11 @@ namespace IronRabbit.Expressions
                 {
                     arguments.Add(EmitExpression(argument));
                 }
-
                 return System.Linq.Expressions.Expression.Call(null, sle.Method, arguments);
             }
             else if (expre is ParameterExpression pe)
             {
-                var parameter = _parameters.Find(p => p.Name == pe.Name);
+                var parameter = parameters.Find(p => p.Name == pe.Name);
                 if (parameter == null)
                     throw new RuntimeException("Missing member:" + pe.Name);
 
@@ -108,16 +107,16 @@ namespace IronRabbit.Expressions
 
         public Delegate Compile(Type delegateType = null)
         {
-            _parameters = new List<System.Linq.Expressions.ParameterExpression>();
-            foreach (var parameter in _lambda.Parameters)
+            parameters = new List<System.Linq.Expressions.ParameterExpression>();
+            foreach (var parameter in this.lambda.Parameters)
             {
-                _parameters.Add(System.Linq.Expressions.Expression.Parameter(parameter.Type, parameter.Name));
+                parameters.Add(System.Linq.Expressions.Expression.Parameter(parameter.Type, parameter.Name));
             }
 
-            var body = EmitExpression(_lambda.Body);
+            var body = EmitExpression(this.lambda.Body);
             var lambda = delegateType == null
-                ? System.Linq.Expressions.Expression.Lambda(body, _lambda.Name, _parameters)
-                : System.Linq.Expressions.Expression.Lambda(delegateType, body, _lambda.Name, _parameters);
+                ? System.Linq.Expressions.Expression.Lambda(body, this.lambda.Name, parameters)
+                : System.Linq.Expressions.Expression.Lambda(delegateType, body, this.lambda.Name, parameters);
             return lambda.Compile();
         }
     }

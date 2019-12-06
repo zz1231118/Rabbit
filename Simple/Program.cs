@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using IronRabbit;
 using IronRabbit.Runtime;
 
@@ -8,9 +9,9 @@ namespace Simple
     {
         static void Main(string[] args)
         {
-            var val = (byte)'f';
-
-            Test5();
+            var exp = IronRabbit.Rabbit.CompileFromSource("f(times,nash,depr)=nash*(1-depr)*0.6");
+            Test7();
+            Console.ReadKey();
         }
 
         static void Test1()
@@ -80,6 +81,42 @@ namespace Simple
             });
 
             var a = result;
+        }
+        static void Test6()
+        {
+            var formula = "f(pcv,tsv,pac,tac,sro,nsro,fro)=(if(tsv>0,pcv/tsv,0)*1.5+if(tac>0,pac/tac,0)*0.5+if(fro>0,sro/fro,0)+if(fro>0,nsro/fro,0)*0.2)*10000";
+            var expression = IronRabbit.Rabbit.CompileFromSource(formula);
+            var eval = expression.Compile<Func<double, double, double, double, double, double, double, double>>();
+            double contribution = 112;
+            double development = 22673249;
+            double areaCount = 12;
+            double sceneSellCount = 39919;
+            double sro = 0;
+            double nsro = 373784.15;
+            double roFlowing = 1560100.44;
+
+            var val = eval(contribution, development, areaCount, sceneSellCount, sro, nsro, roFlowing);
+        }
+        static void Test7()
+        {
+            //var formula = "f(days,per)=max(0.1,1-floor(days/10)*per)";
+            var formula = "f(days,per)=max(0.1,1.0/(2^floor(days/10)))";
+            var expression = Rabbit.CompileFromSource(formula);
+            var factory = expression.Compile<Func<double, double, double>>();
+            var sb = new System.Text.StringBuilder();
+            for (var i = 0; i < 100; i++)
+            {
+                var value = factory(i, 0.2);
+                //var value = expression.Eval(new RuntimeContext()
+                //{
+                //    ["days"] = i,
+                //    ["per"] = 0.2
+                //});
+                sb.AppendFormat("{0}: {1}", i, value);
+                sb.AppendLine();
+            }
+
+            var str = sb.ToString();
         }
     }
 }

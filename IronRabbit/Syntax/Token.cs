@@ -2,16 +2,16 @@
 {
     internal abstract class Token
     {
-        private TokenKind _kind;
+        private TokenKind kind;
 
         protected Token(TokenKind kind)
         {
-            _kind = kind;
+            this.kind = kind;
         }
 
         public abstract string Text { get; }
 
-        public TokenKind Kind => _kind;
+        public TokenKind Kind => kind;
         public virtual double Value
         {
             get => throw new System.NotSupportedException();

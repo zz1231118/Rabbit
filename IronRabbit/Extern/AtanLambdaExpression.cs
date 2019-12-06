@@ -8,7 +8,8 @@ namespace IronRabbit.Extern
     internal class AtanLambdaExpression : SystemLambdaExpression
     {
         public AtanLambdaExpression()
-            : base(typeof(Math).GetMethod("Atan", new Type[] { typeof(double) }), "atan", new BodyExpression(), Expression.Parameter(typeof(double), "x"))
+            : base(typeof(Math).GetMethod(nameof(Math.Atan), new Type[] { typeof(double) }), "atan", new BodyExpression(), 
+                  Expression.Parameter(typeof(double), "x"))
         { }
 
         class BodyExpression : Expression

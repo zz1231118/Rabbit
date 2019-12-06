@@ -8,7 +8,9 @@ namespace IronRabbit.Extern
     internal class LogLambdaExpression : SystemLambdaExpression
     {
         public LogLambdaExpression()
-            : base(typeof(Math).GetMethod("Log", new Type[] { typeof(double), typeof(double) }), "log", new BodyExpression(), Expression.Parameter(typeof(double), "x"), Expression.Parameter(typeof(double), "e"))
+            : base(typeof(Math).GetMethod(nameof(Math.Log), new Type[] { typeof(double), typeof(double) }), "log", new BodyExpression(), 
+                  Expression.Parameter(typeof(double), "x"), 
+                  Expression.Parameter(typeof(double), "e"))
         { }
 
         class BodyExpression : Expression

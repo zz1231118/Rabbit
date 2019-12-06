@@ -8,7 +8,8 @@ namespace IronRabbit.Extern
     internal class SqrtLambdaExpression : SystemLambdaExpression
     {
         public SqrtLambdaExpression()
-            : base(typeof(Math).GetMethod("Sqrt", new Type[] { typeof(double) }), "sqrt", new BodyExpression(), Expression.Parameter(typeof(double), "x"))
+            : base(typeof(Math).GetMethod(nameof(Math.Sqrt), new Type[] { typeof(double) }), "sqrt", new BodyExpression(), 
+                  Expression.Parameter(typeof(double), "x"))
         { }
 
         class BodyExpression : Expression

@@ -2,15 +2,15 @@
 {
     internal class ErrorToken : Token
     {
-        private string _message;
+        private string message;
 
         public ErrorToken(string message)
             : base(TokenKind.Error)
         {
-            _message = message;
+            this.message = message;
         }
 
-        public override string Text => _message;
-        public string Message => _message;
+        public override string Text => message;
+        public string Message => message;
     }
 }

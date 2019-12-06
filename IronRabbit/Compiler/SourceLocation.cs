@@ -9,9 +9,9 @@ namespace IronRabbit.Compiler
         public static readonly SourceLocation Invalid = new SourceLocation(0, 0, 0, true);
         public static readonly SourceLocation MinValue = new SourceLocation(0, 1, 1);
 
-        private int _index;
-        private int _line;
-        private int _column;
+        private readonly int index;
+        private readonly int line;
+        private readonly int column;
 
         public SourceLocation(int index, int line, int column)
         {
@@ -22,45 +22,45 @@ namespace IronRabbit.Compiler
             if (column < 1)
                 throw new ArgumentOutOfRangeException(nameof(column));
 
-            _index = index;
-            _line = line;
-            _column = column;
+            this.index = index;
+            this.line = line;
+            this.column = column;
         }
         private SourceLocation(int index, int line, int column, bool noChecks)
         {
-            _index = index;
-            _line = line;
-            _column = column;
+            this.index = index;
+            this.line = line;
+            this.column = column;
         }
 
-        public int Index => _index;
-        public int Line => _line;
-        public int Column => _column;
-        public bool IsValid => _line != 0 && _column != 0;
+        public int Index => index;
+        public int Line => line;
+        public int Column => column;
+        public bool IsValid => line != 0 && column != 0;
 
         public static bool operator ==(SourceLocation left, SourceLocation right)
         {
-            return left._index == right._index && left._line == right._line && left._column == right._column;
+            return left.index == right.index && left.line == right.line && left.column == right.column;
         }
         public static bool operator !=(SourceLocation left, SourceLocation right)
         {
-            return left._index != right._index || left._line != right._line || left._column != right._column;
+            return left.index != right.index || left.line != right.line || left.column != right.column;
         }
         public static bool operator <(SourceLocation left, SourceLocation right)
         {
-            return left._index < right._index;
+            return left.index < right.index;
         }
         public static bool operator >(SourceLocation left, SourceLocation right)
         {
-            return left._index > right._index;
+            return left.index > right.index;
         }
         public static bool operator <=(SourceLocation left, SourceLocation right)
         {
-            return left._index <= right._index;
+            return left.index <= right.index;
         }
         public static bool operator >=(SourceLocation left, SourceLocation right)
         {
-            return left._index >= right._index;
+            return left.index >= right.index;
         }
 
         public static int Compare(SourceLocation left, SourceLocation right)
@@ -81,15 +81,15 @@ namespace IronRabbit.Compiler
         }
         public bool Equals(SourceLocation other)
         {
-            return other._index == _index && other._line == _line && other._column == _column;
+            return other.index == index && other.line == line && other.column == column;
         }
         public override int GetHashCode()
         {
-            return _line << 16 ^ _column;
+            return line << 16 ^ column;
         }
         public override string ToString()
         {
-            return string.Format("({0},{1},{2})", _index, _line, _column);
+            return string.Format("({0},{1},{2})", index, line, column);
         }
     }
 }

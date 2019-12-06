@@ -2,14 +2,14 @@
 {
     internal class SymbolToken : Token
     {
-        private string _symbol;
+        private string symbol;
 
         public SymbolToken(TokenKind kind, string symbol)
             : base(kind)
         {
-            _symbol = symbol;
+            this.symbol = symbol;
         }
 
-        public override string Text => _symbol;
+        public override string Text => symbol;
     }
 }

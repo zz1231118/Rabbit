@@ -8,7 +8,9 @@ namespace IronRabbit.Extern
     internal class MaxLambdaExpression : SystemLambdaExpression
     {
         public MaxLambdaExpression()
-            : base(typeof(Math).GetMethod("Max", new Type[] { typeof(double), typeof(double) }), "max", new BodyExpression(), Expression.Parameter(typeof(double), "lh"), Expression.Parameter(typeof(double), "rh"))
+            : base(typeof(Math).GetMethod(nameof(Math.Max), new Type[] { typeof(double), typeof(double) }), "max", new BodyExpression(), 
+                  Expression.Parameter(typeof(double), "lh"), 
+                  Expression.Parameter(typeof(double), "rh"))
         { }
 
         class BodyExpression : Expression

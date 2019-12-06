@@ -8,7 +8,8 @@ namespace IronRabbit.Extern
     internal class CeilingLambdaExpression : SystemLambdaExpression
     {
         public CeilingLambdaExpression()
-            : base(typeof(Math).GetMethod("Ceiling", new Type[] { typeof(double) }), "ceiling", new BodyExpression(), Expression.Parameter(typeof(double), "x"))
+            : base(typeof(Math).GetMethod(nameof(Math.Ceiling), new Type[] { typeof(double) }), "ceiling", new BodyExpression(), 
+                  Expression.Parameter(typeof(double), "x"))
         { }
 
         class BodyExpression : Expression

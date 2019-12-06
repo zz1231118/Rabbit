@@ -8,7 +8,8 @@ namespace IronRabbit.Extern
     internal class AbsLambdaExpression : SystemLambdaExpression
     {
         public AbsLambdaExpression()
-            : base(typeof(Math).GetMethod("Abs", new Type[] { typeof(double) }), "abs", new BodyExpression(), Expression.Parameter(typeof(double), "x"))
+            : base(typeof(Math).GetMethod(nameof(Math.Abs), new Type[] { typeof(double) }), "abs", new BodyExpression(), 
+                  Expression.Parameter(typeof(double), "x"))
         { }
 
         class BodyExpression : Expression

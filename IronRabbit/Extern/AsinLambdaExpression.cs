@@ -8,7 +8,8 @@ namespace IronRabbit.Extern
     internal class AsinLambdaExpression : SystemLambdaExpression
     {
         public AsinLambdaExpression()
-            : base(typeof(Math).GetMethod("Asin", new Type[] { typeof(double) }), "asin", new BodyExpression(), Expression.Parameter(typeof(double), "x"))
+            : base(typeof(Math).GetMethod(nameof(Math.Asin), new Type[] { typeof(double) }), "asin", new BodyExpression(), 
+                  Expression.Parameter(typeof(double), "x"))
         { }        
 
         class BodyExpression : Expression

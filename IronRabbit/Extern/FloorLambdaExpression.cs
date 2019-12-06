@@ -8,7 +8,8 @@ namespace IronRabbit.Extern
     internal class FloorLambdaExpression : SystemLambdaExpression
     {
         public FloorLambdaExpression()
-            : base(typeof(Math).GetMethod("Floor", new Type[] { typeof(double) }), "floor", new BodyExpression(), Expression.Parameter(typeof(double), "x"))
+            : base(typeof(Math).GetMethod(nameof(Math.Floor), new Type[] { typeof(double) }), "floor", new BodyExpression(), 
+                  Expression.Parameter(typeof(double), "x"))
         { }
 
         class BodyExpression : Expression
