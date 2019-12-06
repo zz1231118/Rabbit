@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using IronRabbit;
 using IronRabbit.Runtime;
 
@@ -9,7 +8,6 @@ namespace Simple
     {
         static void Main(string[] args)
         {
-            var exp = IronRabbit.Rabbit.CompileFromSource("f(times,nash,depr)=nash*(1-depr)*0.6");
             Test7();
             Console.ReadKey();
         }
@@ -103,6 +101,7 @@ namespace Simple
             var formula = "f(days,per)=max(0.1,1.0/(2^floor(days/10)))";
             var expression = Rabbit.CompileFromSource(formula);
             var factory = expression.Compile<Func<double, double, double>>();
+            var result = factory(44, 2);
             var sb = new System.Text.StringBuilder();
             for (var i = 0; i < 100; i++)
             {
