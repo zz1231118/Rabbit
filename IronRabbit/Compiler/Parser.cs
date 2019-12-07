@@ -24,28 +24,34 @@ namespace IronRabbit.Compiler
         {
             FetchLookahead();
         }
+
         private Token NextToken()
         {
             token = lookahead;
             FetchLookahead();
             return token.Token;
         }
+
         private Token PeekToken()
         {
             return this.lookahead.Token;
         }
+
         private void FetchLookahead()
         {
             lookahead = new TokenWithSpan(tokenizer.NextToken(), tokenizer.TokenSpan);
         }
+
         private bool PeekToken(TokenKind kind)
         {
             return PeekToken().Kind == kind;
         }
+
         private bool PeekToken(Token check)
         {
             return PeekToken() == check;
         }
+
         private bool MaybeEat(TokenKind kind)
         {
             if (PeekToken().Kind == kind)
@@ -54,11 +60,6 @@ namespace IronRabbit.Compiler
                 return true;
             }
             return false;
-        }
-
-        public LambdaExpression Parse()
-        {
-            return ParseStatement();
         }
 
         private LambdaExpression ParseStatement()
@@ -72,6 +73,7 @@ namespace IronRabbit.Compiler
                     return ParseLambdaExpression();
             }
         }
+
         private ExpressionType GetBinaryOperator(TokenKind kind)
         {
             switch (kind)
@@ -119,6 +121,7 @@ namespace IronRabbit.Compiler
 
             return list;
         }
+
         private Expression ParseTerm()
         {
             Expression expr = null;
@@ -196,6 +199,7 @@ namespace IronRabbit.Compiler
 
             return expr;
         }
+
         private Expression ParseExpression(byte precedence = 0)
         {
             Expression leftOperand = ParseTerm();
@@ -219,6 +223,7 @@ namespace IronRabbit.Compiler
 
             return leftOperand;
         }
+
         private LambdaExpression ParseLambdaExpression()
         {
             Token token = NextToken();
@@ -249,6 +254,11 @@ namespace IronRabbit.Compiler
 
             Expression body = ParseExpression();
             return Expression.Lambda(name, body, parameters);
+        }
+
+        public LambdaExpression Parse()
+        {
+            return ParseStatement();
         }
     }
 }

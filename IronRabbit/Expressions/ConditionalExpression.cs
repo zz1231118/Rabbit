@@ -13,14 +13,18 @@ namespace IronRabbit.Expressions
         }
 
         public override ExpressionType NodeType => ExpressionType.Conditional;
+
         public Expression Test { get; }
+
         public Expression TrueExpression { get; }
+
         public Expression FalseExpression { get; }
 
         public override object Eval(RuntimeContext context)
         {
             return (bool)Test.Eval(context) ? TrueExpression.Eval(context) : FalseExpression.Eval(context);
         }
+
         public override string ToString()
         {
             return string.Format("if({0}, {1}, {2})", Test, TrueExpression, FalseExpression);

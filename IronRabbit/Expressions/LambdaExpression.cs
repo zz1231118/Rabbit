@@ -16,8 +16,11 @@ namespace IronRabbit.Expressions
         }
 
         public RabbitDomain Domain { get; internal set; }
+
         public string Name { get; }
+
         public ReadOnlyCollection<ParameterExpression> Parameters { get; }
+
         public Expression Body { get; }
 
         public Delegate Compile(Type deletageType = null)
@@ -25,10 +28,12 @@ namespace IronRabbit.Expressions
             var lambdaCompiler = new LambdaCompiler(this);
             return lambdaCompiler.Compile(deletageType);
         }
+
         public T Compile<T>()
         {
             return (T)(object)Compile(typeof(T));
         }
+
         public override object Eval(RuntimeContext context)
         {
             if (context == null)
@@ -45,6 +50,7 @@ namespace IronRabbit.Expressions
 
             return Body.Eval(lambdaContext);
         }
+
         public override string ToString()
         {
             var sb = new StringBuilder();

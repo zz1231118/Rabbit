@@ -33,10 +33,12 @@ namespace IronRabbit
 
             systemFunctions[lambda.Name] = lambda;
         }
+
         internal static bool TryGetSystemLambda(string name, out SystemLambdaExpression lambda)
         {
             return systemFunctions.TryGetValue(name, out lambda);
         }
+
         internal static SystemLambdaExpression GetSystemLambda(string name)
         {
             SystemLambdaExpression lambda;
@@ -56,6 +58,7 @@ namespace IronRabbit
                 return parser.Parse();
             }
         }
+
         public static LambdaExpression CompileFromFile(string path)
         {
             if (path == null)

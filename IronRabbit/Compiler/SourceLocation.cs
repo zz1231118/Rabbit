@@ -3,7 +3,7 @@
 namespace IronRabbit.Compiler
 {
     [Serializable]
-    public struct SourceLocation : IEquatable<SourceLocation>
+    public readonly struct SourceLocation : IEquatable<SourceLocation>
     {
         public static readonly SourceLocation None = new SourceLocation(0, 16707566, 0, true);
         public static readonly SourceLocation Invalid = new SourceLocation(0, 0, 0, true);
@@ -26,6 +26,7 @@ namespace IronRabbit.Compiler
             this.line = line;
             this.column = column;
         }
+
         private SourceLocation(int index, int line, int column, bool noChecks)
         {
             this.index = index;
@@ -34,30 +35,38 @@ namespace IronRabbit.Compiler
         }
 
         public int Index => index;
+
         public int Line => line;
+
         public int Column => column;
+
         public bool IsValid => line != 0 && column != 0;
 
         public static bool operator ==(SourceLocation left, SourceLocation right)
         {
             return left.index == right.index && left.line == right.line && left.column == right.column;
         }
+
         public static bool operator !=(SourceLocation left, SourceLocation right)
         {
             return left.index != right.index || left.line != right.line || left.column != right.column;
         }
+
         public static bool operator <(SourceLocation left, SourceLocation right)
         {
             return left.index < right.index;
         }
+
         public static bool operator >(SourceLocation left, SourceLocation right)
         {
             return left.index > right.index;
         }
+
         public static bool operator <=(SourceLocation left, SourceLocation right)
         {
             return left.index <= right.index;
         }
+
         public static bool operator >=(SourceLocation left, SourceLocation right)
         {
             return left.index >= right.index;
@@ -65,31 +74,27 @@ namespace IronRabbit.Compiler
 
         public static int Compare(SourceLocation left, SourceLocation right)
         {
-            if (left < right)
-            {
-                return -1;
-            }
-            if (left > right)
-            {
-                return 1;
-            }
-            return 0;
+            return left > right ? 1 : left < right ? -1 : 0;
         }
-        public override bool Equals(object obj)
-        {
-            return obj is SourceLocation other && Equals(other);
-        }
+
         public bool Equals(SourceLocation other)
         {
             return other.index == index && other.line == line && other.column == column;
         }
+
+        public override bool Equals(object obj)
+        {
+            return obj is SourceLocation other && Equals(other);
+        }
+
         public override int GetHashCode()
         {
             return line << 16 ^ column;
         }
+
         public override string ToString()
         {
-            return string.Format("({0},{1},{2})", index, line, column);
+            return string.Format("{{index:{0} line:{1} column:{2}}}", index, line, column);
         }
     }
 }

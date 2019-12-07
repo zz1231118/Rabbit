@@ -29,6 +29,7 @@ namespace IronRabbit.Expressions
                     throw new RuntimeException("unknown unary:" + NodeType.ToString());
             }
         }
+
         public override string ToString()
         {
             switch (NodeType)

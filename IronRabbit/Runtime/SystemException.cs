@@ -8,12 +8,15 @@ namespace IronRabbit.Runtime
     {
         public SystemException()
         { }
+
         public SystemException(string message)
             : base(message)
         { }
+
         public SystemException(string message, Exception innerException)
             : base(message, innerException)
         { }
+
         protected SystemException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         { }

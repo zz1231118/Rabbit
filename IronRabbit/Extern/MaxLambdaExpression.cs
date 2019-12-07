@@ -9,17 +9,17 @@ namespace IronRabbit.Extern
     {
         public MaxLambdaExpression()
             : base(typeof(Math).GetMethod(nameof(Math.Max), new Type[] { typeof(double), typeof(double) }), "max", new BodyExpression(), 
-                  Expression.Parameter(typeof(double), "lh"), 
-                  Expression.Parameter(typeof(double), "rh"))
+                  Expression.Parameter(typeof(double), "left"), 
+                  Expression.Parameter(typeof(double), "right"))
         { }
 
         class BodyExpression : Expression
         {
             public override object Eval(RuntimeContext context)
             {
-                double lh = ParameterExpression.Access<double>(context, "lh");
-                double rh = ParameterExpression.Access<double>(context, "rh");
-                return Math.Max(lh, rh);
+                var left = ParameterExpression.Access<double>(context, "left");
+                var right = ParameterExpression.Access<double>(context, "right");
+                return Math.Max(left, right);
             }
         }
     }

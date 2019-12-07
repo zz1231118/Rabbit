@@ -9,17 +9,17 @@ namespace IronRabbit.Extern
     {
         public RoundLambdaExpression()
             : base(typeof(Math).GetMethod(nameof(Math.Round), new Type[] { typeof(double), typeof(int) }), "round", new BodyExpression(), 
-                  Expression.Parameter(typeof(double), "d"), 
-                  Expression.Parameter(typeof(double), "decimals"))
+                  Expression.Parameter(typeof(double), "value"), 
+                  Expression.Parameter(typeof(double), "digits"))
         { }
 
         class BodyExpression : Expression
         {
             public override object Eval(RuntimeContext context)
             {
-                double d = ParameterExpression.Access<double>(context, "d");
-                double decimals = ParameterExpression.Access<double>(context, "decimals");
-                return Math.Round(d, (int)decimals);
+                var value = ParameterExpression.Access<double>(context, "value");
+                var digits = (int)ParameterExpression.Access<double>(context, "digits");
+                return Math.Round(value, digits);
             }
         }
     }

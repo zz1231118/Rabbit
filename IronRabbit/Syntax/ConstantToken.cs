@@ -11,6 +11,7 @@
         }
 
         public override string Text => value.ToString();
+
         public override double Value => value;
     }
 }

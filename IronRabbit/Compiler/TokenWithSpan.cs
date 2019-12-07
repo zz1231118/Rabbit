@@ -4,7 +4,7 @@ using IronRabbit.Syntax;
 namespace IronRabbit.Compiler
 {
     [Serializable]
-    internal struct TokenWithSpan
+    internal readonly struct TokenWithSpan
     {
         private readonly Token token;
         private readonly IndexSpan span;
@@ -16,6 +16,7 @@ namespace IronRabbit.Compiler
         }
 
         public IndexSpan Span => span;
+
         public Token Token => token;
     }
 }

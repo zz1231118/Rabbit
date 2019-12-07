@@ -13,6 +13,7 @@ namespace IronRabbit.Expressions
         }
 
         public Expression Object { get; }
+
         public string MemberName { get; }
 
         public override object Eval(RuntimeContext context)
@@ -22,6 +23,7 @@ namespace IronRabbit.Expressions
 
             return default(double);
         }
+
         public override string ToString()
         {
             return Object == null ? MemberName : Object.ToString() + "." + MemberName;

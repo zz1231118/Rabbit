@@ -13,6 +13,7 @@ namespace IronRabbit.Expressions
         }
 
         public Type Type { get; }
+
         public string Name { get; }
 
         internal static object Access(RuntimeContext context, string name)
@@ -23,10 +24,12 @@ namespace IronRabbit.Expressions
 
             return value.Value;
         }
+
         internal static T Access<T>(RuntimeContext context, string name)
         {
             return (T)Access(context, name);
         }
+
         public override object Eval(RuntimeContext context)
         {
             if (context == null)
@@ -34,6 +37,7 @@ namespace IronRabbit.Expressions
 
             return Access(context, Name);
         }
+
         public override string ToString()
         {
             return Name;

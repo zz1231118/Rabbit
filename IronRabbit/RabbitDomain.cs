@@ -15,6 +15,7 @@ namespace IronRabbit
 
             functions[lambda.Name] = lambda;
         }
+
         public bool TryGetLambda(string name, out LambdaExpression lambda)
         {
             if (functions.TryGetValue(name, out lambda))
@@ -29,6 +30,7 @@ namespace IronRabbit
 
             return false;
         }
+
         public LambdaExpression GetLambda(string name)
         {
             LambdaExpression lambda;
@@ -46,6 +48,7 @@ namespace IronRabbit
             Register(lambda);
             return lambda;
         }
+
         public LambdaExpression CompileFromFile(string path)
         {
             if (path == null)

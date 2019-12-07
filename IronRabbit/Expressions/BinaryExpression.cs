@@ -14,6 +14,7 @@ namespace IronRabbit.Expressions
         }
 
         public Expression Left { get; }
+
         public Expression Right { get; }
 
         public override object Eval(RuntimeContext context)
@@ -53,6 +54,7 @@ namespace IronRabbit.Expressions
                     throw new RuntimeException("unknown operator:" + NodeType.ToString());
             }
         }
+
         public override string ToString()
         {
             var sb = new StringBuilder();

@@ -20,6 +20,7 @@ namespace IronRabbit.Expressions
 
             return Value;
         }
+
         public override string ToString()
         {
             return Value.ToString();

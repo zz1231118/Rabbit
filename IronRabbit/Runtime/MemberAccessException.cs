@@ -8,12 +8,15 @@ namespace IronRabbit.Runtime
     {
         public MemberAccessException()
         { }
+
         public MemberAccessException(string message)
             : base(message)
         { }
+
         public MemberAccessException(string message, Exception innerException)
             : base(message, innerException)
         { }
+
         protected MemberAccessException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         { }

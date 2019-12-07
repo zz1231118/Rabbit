@@ -10,6 +10,7 @@ namespace IronRabbit.Runtime
 
         public RuntimeContext()
         { }
+
         internal RuntimeContext(RuntimeContext parent)
         {
             if (parent == null)
@@ -29,6 +30,7 @@ namespace IronRabbit.Runtime
                 variables[name] = new RuntimeVariable(value);
             }
         }
+
         internal RabbitDomain Domain { get; set; }
 
         private RuntimeContext FindCurrentOrParent(string name)
@@ -43,7 +45,8 @@ namespace IronRabbit.Runtime
 
             variables[name] = new RuntimeVariable(value);
         }
-        public RuntimeVariable Assign(string name, double value)
+
+        public RuntimeVariable Assign(string name, object value)
         {
             if (name == null)
                 throw new ArgumentNullException(nameof(name));
@@ -57,6 +60,7 @@ namespace IronRabbit.Runtime
             rv.SetValue(value);
             return rv;
         }
+
         public RuntimeVariable Access(string name)
         {
             if (name == null)
@@ -75,6 +79,7 @@ namespace IronRabbit.Runtime
         {
             public RuntimeVariable()
             { }
+
             public RuntimeVariable(object value)
             {
                 Value = value;
@@ -82,6 +87,7 @@ namespace IronRabbit.Runtime
             }
 
             public object Value { get; set; }
+
             public bool IsAssigned { get; set; }
 
             public void SetValue(object value)

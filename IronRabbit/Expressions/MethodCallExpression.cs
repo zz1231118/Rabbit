@@ -17,7 +17,9 @@ namespace IronRabbit.Expressions
         }
 
         public Expression Object { get; }
+
         public string MethodName { get; }
+
         public ReadOnlyCollection<Expression> Arguments { get; }
 
         internal LambdaExpression GetLambda(RabbitDomain domain)
@@ -64,6 +66,7 @@ namespace IronRabbit.Expressions
                 throw new NotSupportedException();
             }
         }
+
         public override string ToString()
         {
             var sb = new StringBuilder();

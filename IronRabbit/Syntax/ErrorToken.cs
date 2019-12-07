@@ -11,6 +11,7 @@
         }
 
         public override string Text => message;
+
         public string Message => message;
     }
 }

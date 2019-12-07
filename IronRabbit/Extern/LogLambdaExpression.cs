@@ -17,8 +17,8 @@ namespace IronRabbit.Extern
         {
             public override object Eval(RuntimeContext context)
             {
-                double x = ParameterExpression.Access<double>(context, "x");
-                double e = ParameterExpression.Access<double>(context, "e");
+                var x = ParameterExpression.Access<double>(context, "x");
+                var e = ParameterExpression.Access<double>(context, "e");
                 return Math.Log(x, e);
             }
         }

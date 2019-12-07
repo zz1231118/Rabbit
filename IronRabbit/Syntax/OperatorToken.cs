@@ -13,6 +13,7 @@
         }
 
         public override string Text => @operator;
+
         public byte Precedence => precedence;
     }
 }

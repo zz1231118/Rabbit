@@ -85,13 +85,13 @@ namespace Simple
             var formula = "f(pcv,tsv,pac,tac,sro,nsro,fro)=(if(tsv>0,pcv/tsv,0)*1.5+if(tac>0,pac/tac,0)*0.5+if(fro>0,sro/fro,0)+if(fro>0,nsro/fro,0)*0.2)*10000";
             var expression = IronRabbit.Rabbit.CompileFromSource(formula);
             var eval = expression.Compile<Func<double, double, double, double, double, double, double, double>>();
-            double contribution = 112;
-            double development = 22673249;
-            double areaCount = 12;
-            double sceneSellCount = 39919;
-            double sro = 0;
-            double nsro = 373784.15;
-            double roFlowing = 1560100.44;
+            var contribution = 112;
+            var development = 22673249;
+            var areaCount = 12;
+            var sceneSellCount = 39919;
+            var sro = 0;
+            var nsro = 373784.15;
+            var roFlowing = 1560100.44;
 
             var val = eval(contribution, development, areaCount, sceneSellCount, sro, nsro, roFlowing);
         }

@@ -32,9 +32,13 @@ namespace IronRabbit.Compiler
         }
 
         public bool EndOfStream => endOfStream;
+
         public int Index => tokenStartIndex + Math.Min(position, end) - start;
+
         public SourceLocation Position => IndexToLocation(Index);
+
         public IndexSpan TokenSpan => new IndexSpan(tokenStartIndex, tokenEndIndex - tokenStartIndex);
+
         private int TokenLength => tokenEnd - start;
 
         private static void ResizeInternal(ref char[] array, int newSize, int start, int count)
@@ -43,14 +47,22 @@ namespace IronRabbit.Compiler
             Buffer.BlockCopy(array, start * 2, array2, 0, count * 2);
             array = array2;
         }
+
         private static bool IsNameStart(int ch)
         {
             return char.IsLetter((char)ch) || ch == 95;
         }
+
         private static bool IsNamePart(int ch)
         {
             return char.IsLetterOrDigit((char)ch) || ch == 95;
         }
+
+        private static Token BadChar(int ch)
+        {
+            return Token.Error(((char)ch).ToString());
+        }
+
         private void RefillBuffer()
         {
             if (end == buffer.Length)
@@ -65,6 +77,7 @@ namespace IronRabbit.Compiler
 
             end  += reader.Read(buffer, end, buffer.Length - end);
         }
+
         private void Initialize(int bufferCapacity)
         {
             multiEolns = true;
@@ -72,6 +85,7 @@ namespace IronRabbit.Compiler
             newLineLocations = new List<int>();
             initialLocation = SourceLocation.MinValue;
         }
+
         private int Peek()
         {
             if (position >= end)
@@ -86,6 +100,7 @@ namespace IronRabbit.Compiler
 
             return buffer[position];
         }
+
         private bool NextChar(int ch)
         {
             if (Peek() == ch)
@@ -95,12 +110,14 @@ namespace IronRabbit.Compiler
             }
             return false;
         }
+
         private int NextChar()
         {
             int result = Peek();
             position++;
             return result;
         }
+
         private int ReadLine()
         {
             int num;
@@ -115,24 +132,29 @@ namespace IronRabbit.Compiler
             BufferBack();
             return num;
         }
+
         private bool IsEoln(int current)
         {
             return current == 10 || (current == 13 && multiEolns);
         }
+
         private void BufferBack()
         {
             SeekRelative(-1);
         }
+
         private void SeekRelative(int disp)
         {
             position += disp;
         }
+
         private void MarkTokenEnd()
         {
             tokenEnd = Math.Min(position, end);
             int num = tokenEnd - start;
             tokenEndIndex = tokenStartIndex + num;
         }
+
         private void DiscardToken()
         {
             if (tokenEnd == -1)
@@ -144,18 +166,22 @@ namespace IronRabbit.Compiler
             tokenStartIndex = tokenEndIndex;
             tokenEnd = -1;
         }
+
         private string GetTokenString()
         {
             return new string(buffer, start, tokenEnd - start);
         }
+
         private string GetTokenSubstring(int offset)
         {
             return GetTokenSubstring(offset, tokenEnd - start - offset);
         }
+
         private string GetTokenSubstring(int offset, int length)
         {
             return new string(buffer, start + offset, length);
         }
+
         private int SkipWhiteSpace()
         {
             int num;
@@ -169,6 +195,7 @@ namespace IronRabbit.Compiler
             SeekRelative(1);
             return num;
         }
+
         private SourceLocation IndexToLocation(int index)
         {
             int num = newLineLocations.BinarySearch(index);
@@ -188,10 +215,6 @@ namespace IronRabbit.Compiler
             return new SourceLocation(index + initialLocation.Index, num + 1 + initialLocation.Line, fcolumn);
         }
         
-        private static Token BadChar(int ch)
-        {
-            return Token.Error(((char)ch).ToString());
-        }
         private Token ReadName()
         {
             BufferBack();
@@ -208,6 +231,7 @@ namespace IronRabbit.Compiler
             MarkTokenEnd();
             return Token.Identifier(GetTokenString());
         }
+
         private Token ReadNumber()
         {
             int num;
@@ -227,6 +251,7 @@ namespace IronRabbit.Compiler
             MarkTokenEnd();
             return Token.Constant(double.Parse(GetTokenString()));
         }
+
         private Token ReadComment()
         {
             BufferBack();

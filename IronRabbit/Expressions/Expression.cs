@@ -9,14 +9,14 @@ namespace IronRabbit.Expressions
     {
         protected Expression()
         { }
+
         protected Expression(ExpressionType nodeType)
         {
             NodeType = nodeType;
         }
 
         public virtual ExpressionType NodeType { get; }
-//System.Linq.Expressions.Expression exp;
-//System.Linq.Expressions.ConstantExpression s;
+
         public static ParameterExpression Parameter(Type type, string name)
         {
             if (name == null)
@@ -24,6 +24,7 @@ namespace IronRabbit.Expressions
 
             return new ParameterExpression(ExpressionType.Parameter, type, name);
         }
+
         public static ParameterExpression Variable(Type type, string name)
         {
             if (name == null)
@@ -31,6 +32,7 @@ namespace IronRabbit.Expressions
 
             return new ParameterExpression(ExpressionType.Variable, type, name);
         }
+
         public static MemberExpression Member(Expression instance, string name)
         {
             if (instance == null)
@@ -40,6 +42,7 @@ namespace IronRabbit.Expressions
 
             return new MemberExpression(instance, name);
         }
+
         public static MemberExpression Field(Expression instance, string name)
         {
             if (instance == null)
@@ -49,6 +52,7 @@ namespace IronRabbit.Expressions
 
             return new MemberExpression(instance, name);
         }
+
         public static MemberExpression Property(Expression instance, string name)
         {
             if (instance == null)
@@ -58,6 +62,7 @@ namespace IronRabbit.Expressions
 
             return new MemberExpression(instance, name);
         }
+
         public static BinaryExpression Assign(Expression left, Expression right)
         {
             if (left == null)
@@ -67,10 +72,12 @@ namespace IronRabbit.Expressions
 
             return new BinaryExpression(ExpressionType.Assign, left, right);
         }
+
         public static ConstantExpression Constant(object value)
         {
             return new ConstantExpression(value);
         }
+
         public static UnaryExpression Convert(Expression expression, Type type)
         {
             if (expression == null)
@@ -80,6 +87,7 @@ namespace IronRabbit.Expressions
 
             return new UnaryExpression(ExpressionType.Constant, expression);
         }
+
         public static BinaryExpression Add(Expression left, Expression right)
         {
             if (left == null)
@@ -89,6 +97,7 @@ namespace IronRabbit.Expressions
 
             return new BinaryExpression(ExpressionType.Add, left, right);
         }
+
         public static BinaryExpression Subtract(Expression left, Expression right)
         {
             if (left == null)
@@ -98,6 +107,7 @@ namespace IronRabbit.Expressions
 
             return new BinaryExpression(ExpressionType.Subtract, left, right);
         }
+
         public static BinaryExpression Multiply(Expression left, Expression right)
         {
             if (left == null)
@@ -107,6 +117,7 @@ namespace IronRabbit.Expressions
 
             return new BinaryExpression(ExpressionType.Multiply, left, right);
         }
+
         public static BinaryExpression Divide(Expression left, Expression right)
         {
             if (left == null)
@@ -116,6 +127,7 @@ namespace IronRabbit.Expressions
 
             return new BinaryExpression(ExpressionType.Divide, left, right);
         }
+
         public static BinaryExpression Modulo(Expression left, Expression right)
         {
             if (left == null)
@@ -125,6 +137,7 @@ namespace IronRabbit.Expressions
 
             return new BinaryExpression(ExpressionType.Modulo, left, right);
         }
+
         public static BinaryExpression Power(Expression left, Expression right)
         {
             if (left == null)
@@ -134,6 +147,7 @@ namespace IronRabbit.Expressions
 
             return new BinaryExpression(ExpressionType.Power, left, right);
         }
+
         public static UnaryExpression Negate(Expression expression)
         {
             if (expression == null)
@@ -141,6 +155,7 @@ namespace IronRabbit.Expressions
 
             return new UnaryExpression(ExpressionType.Negate, expression);
         }
+
         public static BinaryExpression ArrayIndex(Expression array, Expression index)
         {
             if (array == null)
@@ -150,6 +165,7 @@ namespace IronRabbit.Expressions
 
             return new BinaryExpression(ExpressionType.ArrayIndex, array, index);
         }
+
         public static UnaryExpression ArrayLength(Expression array)
         {
             if (array == null)
@@ -157,6 +173,7 @@ namespace IronRabbit.Expressions
 
             return new UnaryExpression(ExpressionType.ArrayLength, array);
         }
+
         public static MethodCallExpression Call(Expression instance, string methodName, params Expression[] arguments)
         {
             if (methodName == null)
@@ -164,6 +181,7 @@ namespace IronRabbit.Expressions
 
             return new MethodCallExpression(instance, methodName, arguments);
         }
+
         public static MethodCallExpression Call(Expression instance, string methodName, IList<Expression> arguments)
         {
             if (methodName == null)
@@ -173,6 +191,7 @@ namespace IronRabbit.Expressions
 
             return new MethodCallExpression(instance, methodName, arguments);
         }
+
         public static LambdaExpression Lambda(string name, Expression body, params ParameterExpression[] parameters)
         {
             if (name == null)
@@ -182,6 +201,7 @@ namespace IronRabbit.Expressions
 
             return new LambdaExpression(name, body, parameters);
         }
+
         public static LambdaExpression Lambda(string name, Expression body, IList<ParameterExpression> parameters)
         {
             if (name == null)
@@ -191,6 +211,7 @@ namespace IronRabbit.Expressions
 
             return new LambdaExpression(name, body, parameters.ToArray());
         }
+
         public static UnaryExpression Not(Expression expression)
         {
             if (expression == null)
@@ -198,6 +219,7 @@ namespace IronRabbit.Expressions
 
             return new UnaryExpression(ExpressionType.Not, expression);
         }
+
         public static ConditionalExpression Condition(Expression condition, Expression trueExpression, Expression falseExpression)
         {
             if (condition == null)
