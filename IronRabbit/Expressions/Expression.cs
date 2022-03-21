@@ -17,6 +17,8 @@ namespace IronRabbit.Expressions
 
         public virtual ExpressionType NodeType { get; }
 
+        public virtual Type Type { get; }
+
         public static ParameterExpression Parameter(Type type, string name)
         {
             if (name == null)

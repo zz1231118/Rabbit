@@ -5,16 +5,16 @@ namespace IronRabbit.Expressions
 {
     public class MemberExpression : Expression
     {
-        internal MemberExpression(Expression instance, string memberName)
+        internal MemberExpression(Expression instance, string name)
             : base(ExpressionType.MemberAccess)
         {
-            Object = instance;
-            MemberName = memberName;
+            Instance = instance;
+            Name = name;
         }
 
-        public Expression Object { get; }
+        public Expression Instance { get; }
 
-        public string MemberName { get; }
+        public string Name { get; }
 
         public override object Eval(RuntimeContext context)
         {
@@ -26,7 +26,7 @@ namespace IronRabbit.Expressions
 
         public override string ToString()
         {
-            return Object == null ? MemberName : Object.ToString() + "." + MemberName;
+            return Instance == null ? Name : Instance.ToString() + "." + Name;
         }
     }
 }

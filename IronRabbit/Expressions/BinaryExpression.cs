@@ -22,49 +22,39 @@ namespace IronRabbit.Expressions
             if (context == null)
                 throw new ArgumentNullException(nameof(context));
 
-            object lh = Left.Eval(context);
-            object rh = Right.Eval(context);
-            switch (NodeType)
+            var leftResult = Left.Eval(context);
+            var rightResult = Right.Eval(context);
+            return NodeType switch
             {
-                case ExpressionType.Add:
-                    return System.Convert.ToDouble(lh) + System.Convert.ToDouble(rh);
-                case ExpressionType.Subtract:
-                    return System.Convert.ToDouble(lh) - System.Convert.ToDouble(rh);
-                case ExpressionType.Multiply:
-                    return System.Convert.ToDouble(lh) * System.Convert.ToDouble(rh);
-                case ExpressionType.Divide:
-                    return System.Convert.ToDouble(lh) / System.Convert.ToDouble(rh);
-                case ExpressionType.Modulo:
-                    return System.Convert.ToDouble(lh) % System.Convert.ToDouble(rh);
-                case ExpressionType.Power:
-                    return Math.Pow(System.Convert.ToDouble(lh), System.Convert.ToDouble(rh));
-                case ExpressionType.LessThan:
-                    return System.Convert.ToDouble(lh) < System.Convert.ToDouble(rh);
-                case ExpressionType.LessThanOrEqual:
-                    return System.Convert.ToDouble(lh) <= System.Convert.ToDouble(rh);
-                case ExpressionType.Equal:
-                    return lh is bool ? System.Convert.ToBoolean(lh) == System.Convert.ToBoolean(rh) : System.Convert.ToDouble(lh) == System.Convert.ToDouble(rh);
-                case ExpressionType.GreaterThanOrEqual:
-                    return System.Convert.ToDouble(lh) >= System.Convert.ToDouble(rh);
-                case ExpressionType.GreaterThan:
-                    return System.Convert.ToDouble(lh) > System.Convert.ToDouble(rh);
-                case ExpressionType.NotEqual:
-                    return lh is bool ? System.Convert.ToBoolean(lh) != System.Convert.ToBoolean(rh) : System.Convert.ToDouble(lh) != System.Convert.ToDouble(rh);
-                default:
-                    throw new RuntimeException("unknown operator:" + NodeType.ToString());
-            }
+                ExpressionType.Add => System.Convert.ToDouble(leftResult) + System.Convert.ToDouble(rightResult),
+                ExpressionType.Subtract => System.Convert.ToDouble(leftResult) - System.Convert.ToDouble(rightResult),
+                ExpressionType.Multiply => System.Convert.ToDouble(leftResult) * System.Convert.ToDouble(rightResult),
+                ExpressionType.Divide => System.Convert.ToDouble(leftResult) / System.Convert.ToDouble(rightResult),
+                ExpressionType.Modulo => System.Convert.ToDouble(leftResult) % System.Convert.ToDouble(rightResult),
+                ExpressionType.Power => Math.Pow(System.Convert.ToDouble(leftResult), System.Convert.ToDouble(rightResult)),
+                ExpressionType.LessThan => System.Convert.ToDouble(leftResult) < System.Convert.ToDouble(rightResult),
+                ExpressionType.LessThanOrEqual => System.Convert.ToDouble(leftResult) <= System.Convert.ToDouble(rightResult),
+                ExpressionType.Equal => leftResult is bool ? System.Convert.ToBoolean(leftResult) == System.Convert.ToBoolean(rightResult) : System.Convert.ToDouble(leftResult) == System.Convert.ToDouble(rightResult),
+                ExpressionType.GreaterThanOrEqual => System.Convert.ToDouble(leftResult) >= System.Convert.ToDouble(rightResult),
+                ExpressionType.GreaterThan => System.Convert.ToDouble(leftResult) > System.Convert.ToDouble(rightResult),
+                ExpressionType.NotEqual => leftResult is bool ? System.Convert.ToBoolean(leftResult) != System.Convert.ToBoolean(rightResult) : System.Convert.ToDouble(leftResult) != System.Convert.ToDouble(rightResult),
+                _ => throw new RuntimeException("unknown operator:" + NodeType.ToString()),
+            };
         }
 
         public override string ToString()
         {
             var sb = new StringBuilder();
             if (Left is BinaryExpression)
+            {
                 sb.Append('(');
-
-            sb.Append(Left.ToString());
-            if (Left is BinaryExpression)
+                sb.Append(Left.ToString());
                 sb.Append(')');
-
+            }
+            else
+            {
+                sb.Append(Left.ToString());
+            }
             switch (NodeType)
             {
                 case ExpressionType.Add:

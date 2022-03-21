@@ -11,12 +11,12 @@ namespace IronRabbit.Expressions
         internal MethodCallExpression(Expression instance, string methodName, IList<Expression> arguments)
             : base(ExpressionType.MethodCall)
         {
-            Object = instance;
+            Instance = instance;
             MethodName = methodName;
             Arguments = new ReadOnlyCollection<Expression>(arguments);
         }
 
-        public Expression Object { get; }
+        public Expression Instance { get; }
 
         public string MethodName { get; }
 
@@ -42,7 +42,7 @@ namespace IronRabbit.Expressions
             if (context == null)
                 throw new ArgumentNullException(nameof(context));
 
-            if (Object == null)
+            if (Instance == null)
             {
                 var lambdaExpression = GetLambda(context.Domain);
                 if (lambdaExpression == null)

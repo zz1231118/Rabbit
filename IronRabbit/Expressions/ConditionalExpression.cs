@@ -27,7 +27,7 @@ namespace IronRabbit.Expressions
 
         public override string ToString()
         {
-            return string.Format("if({0}, {1}, {2})", Test, TrueExpression, FalseExpression);
+            return string.Format("if({0},{1},{2})", Test, TrueExpression, FalseExpression);
         }
     }
 

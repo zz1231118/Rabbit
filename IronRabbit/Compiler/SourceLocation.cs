@@ -27,7 +27,7 @@ namespace IronRabbit.Compiler
             this.column = column;
         }
 
-        private SourceLocation(int index, int line, int column, bool noChecks)
+        private SourceLocation(int index, int line, int column, bool _)
         {
             this.index = index;
             this.line = line;
@@ -89,7 +89,7 @@ namespace IronRabbit.Compiler
 
         public override int GetHashCode()
         {
-            return line << 16 ^ column;
+            return (line << 16) ^ column;
         }
 
         public override string ToString()

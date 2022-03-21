@@ -8,3 +8,5 @@
 /IronRabbit/obj
 /IronRabbit/bin
 /.vs
+/IronRabbitTest/bin/Debug/net6.0
+/IronRabbitTest/obj

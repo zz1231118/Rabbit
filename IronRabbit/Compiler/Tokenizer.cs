@@ -9,7 +9,7 @@ namespace IronRabbit.Compiler
     {
         private const int DefaultBufferCapacity = 1024;
 
-        private TextReader reader;
+        private readonly TextReader reader;
         private char[] buffer;
         private int start;
         private int end;

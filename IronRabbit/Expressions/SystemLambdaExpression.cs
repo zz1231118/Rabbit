@@ -15,5 +15,7 @@ namespace IronRabbit.Expressions
         }
 
         public MethodInfo Method { get; }
+
+        public override Type Type => Method.ReturnType;
     }
 }

@@ -49,7 +49,7 @@ namespace IronRabbit.Compiler
 
         public override int GetHashCode()
         {
-            return start.GetHashCode() ^ length.GetHashCode();
+            return (start.GetHashCode() << 16) ^ length.GetHashCode();
         }
 
         public override string ToString()

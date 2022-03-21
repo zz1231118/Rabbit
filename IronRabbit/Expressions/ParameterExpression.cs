@@ -12,7 +12,7 @@ namespace IronRabbit.Expressions
             Name = name;
         }
 
-        public Type Type { get; }
+        public override Type Type { get; }
 
         public string Name { get; }
 

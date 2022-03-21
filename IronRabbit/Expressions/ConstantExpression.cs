@@ -13,6 +13,8 @@ namespace IronRabbit.Expressions
 
         public object Value { get; }
 
+        public override Type Type => Value?.GetType();
+
         public override object Eval(RuntimeContext context)
         {
             if (context == null)

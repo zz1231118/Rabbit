@@ -1,100 +1,12 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{CF5B8C0C-A072-4F50-AC94-82D7873CC28D}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>IronRabbit</RootNamespace>
-    <AssemblyName>IronRabbit</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
+    <TargetFramework>netstandard2.0</TargetFramework>
+	<LangVersion>preview</LangVersion>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
+    <None Include="..\.editorconfig" Link=".editorconfig" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Compiler\CompilerException.cs" />
-    <Compile Include="Compiler\IndexSpan.cs" />
-    <Compile Include="Compiler\Parser.cs" />
-    <Compile Include="Compiler\SourceLocation.cs" />
-    <Compile Include="Expressions\ConditionalExpression.cs" />
-    <Compile Include="Expressions\LambdaCompiler.cs" />
-    <Compile Include="Expressions\LambdaCompilerException.cs" />
-    <Compile Include="Expressions\SystemLambdaExpression.cs" />
-    <Compile Include="Syntax\CommentToken.cs" />
-    <Compile Include="Syntax\ConstantToken.cs" />
-    <Compile Include="Syntax\ErrorToken.cs" />
-    <Compile Include="Syntax\IdentifierToken.cs" />
-    <Compile Include="Syntax\OperatorToken.cs" />
-    <Compile Include="Syntax\SymbolToken.cs" />
-    <Compile Include="Syntax\Token.cs" />
-    <Compile Include="Compiler\Tokenizer.cs" />
-    <Compile Include="Syntax\TokenKind.cs" />
-    <Compile Include="Syntax\Tokens.cs" />
-    <Compile Include="Compiler\TokenWithSpan.cs" />
-    <Compile Include="Expressions\BinaryExpression.cs" />
-    <Compile Include="Expressions\ConstantExpression.cs" />
-    <Compile Include="Expressions\Expression.cs" />
-    <Compile Include="Expressions\ExpressionType.cs" />
-    <Compile Include="Expressions\LambdaExpression.cs" />
-    <Compile Include="Expressions\MemberExpression.cs" />
-    <Compile Include="Expressions\MethodCallExpression.cs" />
-    <Compile Include="Expressions\ParameterExpression.cs" />
-    <Compile Include="Extern\AcosLambdaExpression.cs" />
-    <Compile Include="Extern\AtanLambdaExpression.cs" />
-    <Compile Include="Extern\AsinLambdaExpression.cs" />
-    <Compile Include="Extern\AbsLambdaExpression.cs" />
-    <Compile Include="Extern\CeilingLambdaExpression.cs" />
-    <Compile Include="Extern\SinLambdaExpression.cs" />
-    <Compile Include="Extern\SinhLambdaExpression.cs" />
-    <Compile Include="Extern\CosLambdaExpression.cs" />
-    <Compile Include="Extern\CoshLambdaExpression.cs" />
-    <Compile Include="Extern\TanLambdaExpression.cs" />
-    <Compile Include="Extern\TanhLambdaExpression.cs" />
-    <Compile Include="Extern\SqrtLambdaExpression.cs" />
-    <Compile Include="Extern\ExpLambdaExpression.cs" />
-    <Compile Include="Extern\ExternLambdaAttribute.cs" />
-    <Compile Include="Extern\FloorLambdaExpression.cs" />
-    <Compile Include="Extern\MaxLambdaExpression.cs" />
-    <Compile Include="Extern\LogLambdaExpression.cs" />
-    <Compile Include="Extern\MinLambdaExpression.cs" />
-    <Compile Include="Extern\RoundLambdaExpression.cs" />
-    <Compile Include="Rabbit.cs" />
-    <Compile Include="RabbitDomain.cs" />
-    <Compile Include="Runtime\MemberAccessException.cs" />
-    <Compile Include="Runtime\MissingMemberException.cs" />
-    <Compile Include="Runtime\MissingMethodException.cs" />
-    <Compile Include="Runtime\RuntimeContext.cs" />
-    <Compile Include="Expressions\UnaryExpression.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Runtime\RuntimeException.cs" />
-    <Compile Include="Runtime\SystemException.cs" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+
 </Project>

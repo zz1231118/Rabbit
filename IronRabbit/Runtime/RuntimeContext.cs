@@ -5,8 +5,8 @@ namespace IronRabbit.Runtime
 {
     public class RuntimeContext
     {
-        private RuntimeContext parent;
-        private Dictionary<string, RuntimeVariable> variables = new Dictionary<string, RuntimeVariable>();
+        private readonly Dictionary<string, RuntimeVariable> variables = new Dictionary<string, RuntimeVariable>();
+        private readonly RuntimeContext parent;
 
         public RuntimeContext()
         { }
@@ -17,7 +17,7 @@ namespace IronRabbit.Runtime
                 throw new ArgumentNullException(nameof(parent));
 
             this.parent = parent;
-            Domain = parent.Domain;
+            this.Domain = parent.Domain;
         }
 
         public object this[string name]
@@ -52,10 +52,8 @@ namespace IronRabbit.Runtime
                 throw new ArgumentNullException(nameof(name));
 
             var context = FindCurrentOrParent(name);
-            if (context == null)
-                return null;
-            if (!context.variables.TryGetValue(name, out RuntimeVariable rv))
-                return null;
+            if (context == null) return null;
+            if (!context.variables.TryGetValue(name, out RuntimeVariable rv)) return null;
 
             rv.SetValue(value);
             return rv;
@@ -67,11 +65,8 @@ namespace IronRabbit.Runtime
                 throw new ArgumentNullException(nameof(name));
 
             var context = FindCurrentOrParent(name);
-            if (context == null)
-                return null;
-            if (!context.variables.TryGetValue(name, out RuntimeVariable rv))
-                return null;
-
+            if (context == null) return null;
+            if (!context.variables.TryGetValue(name, out RuntimeVariable rv)) return null;
             return rv;
         }
 

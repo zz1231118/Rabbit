@@ -23,10 +23,12 @@ namespace IronRabbit.Expressions
 
         public Expression Body { get; }
 
+        public override Type Type => typeof(double);
+
         public Delegate Compile(Type deletageType = null)
         {
-            var lambdaCompiler = new LambdaCompiler(this);
-            return lambdaCompiler.Compile(deletageType);
+            var lambdaCompiler = new ExpressionCompiler();
+            return lambdaCompiler.Compile(this, deletageType);
         }
 
         public T Compile<T>()
