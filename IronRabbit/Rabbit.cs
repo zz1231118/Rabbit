@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Reflection;
-using IronRabbit.Compiler;
+﻿using IronRabbit.Compiler;
 using IronRabbit.Expressions;
-using IronRabbit.Extern;
+using IronRabbit.Builtin;
 
 namespace IronRabbit
 {
@@ -14,74 +10,87 @@ namespace IronRabbit
 
         static Rabbit()
         {
-            var assembly = Assembly.GetExecutingAssembly();
-            foreach (var type in assembly.GetTypes())
-            {
-                var attributes = type.GetCustomAttributes(typeof(ExternLambdaAttribute), false);
-                if (attributes.Length > 0)
-                {
-                    var constructor = type.GetConstructor(Type.EmptyTypes);
-                    Register(constructor.Invoke(null) as SystemLambdaExpression);
-                }
-            }
+            Register<AbsLambdaExpression>();
+            Register<AcosLambdaExpression>();
+            Register<AsinLambdaExpression>();
+            Register<AtanLambdaExpression>();
+            Register<CeilingLambdaExpression>();
+            Register<CoshLambdaExpression>();
+            Register<CosLambdaExpression>();
+            Register<ExpLambdaExpression>();
+            Register<FloorLambdaExpression>();
+            Register<LogLambdaExpression>();
+            Register<MaxLambdaExpression>();
+            Register<MinLambdaExpression>();
+            Register<RoundLambdaExpression>();
+            Register<SinhLambdaExpression>();
+            Register<SinLambdaExpression>();
+            Register<SqrtLambdaExpression>();
+            Register<TanhLambdaExpression>();
+            Register<TanLambdaExpression>();
         }
 
-        internal static void Register(SystemLambdaExpression lambda)
-        {
-            if (lambda == null)
-                throw new ArgumentNullException(nameof(lambda));
-
-            systemFunctions[lambda.Name] = lambda;
-        }
-
-        internal static bool TryGetSystemLambda(string name, out SystemLambdaExpression lambda)
+        internal static bool TryGetSystemLambda(string name, [MaybeNullWhen(false)] out SystemLambdaExpression lambda)
         {
             return systemFunctions.TryGetValue(name, out lambda);
         }
 
-        internal static SystemLambdaExpression GetSystemLambda(string name)
+        internal static SystemLambdaExpression? GetSystemLambda(string name)
         {
-            systemFunctions.TryGetValue(name, out SystemLambdaExpression lambda);
+            systemFunctions.TryGetValue(name, out var lambda);
             return lambda;
+        }
+
+        public static void Register<T>()
+            where T : SystemLambdaExpression, new()
+        {
+            var lambda = new T();
+            systemFunctions[lambda.Name] = lambda;
+        }
+
+        public static void Register(SystemLambdaExpression lambda)
+        {
+            if (lambda == null) throw new ArgumentNullException(nameof(lambda));
+
+            systemFunctions[lambda.Name] = lambda;
         }
 
         public static LambdaExpression CompileFromSource(string source)
         {
-            if (source == null)
-                throw new ArgumentNullException(nameof(source));
+            if (source == null) throw new ArgumentNullException(nameof(source));
 
-            LambdaExpression lambda = null;
-            using var reader = new StringReader(source);
-            var tokenizer = new Tokenizer(reader);
-            var parser = new Parser(tokenizer);
-            while (!tokenizer.EndOfStream)
+            LambdaExpression? lambda = null;
+            var reader = SourceReader.From(source);
+            var lexer = new Lexer(reader);
+            var parser = new Parser(lexer);
+            while (true)
             {
                 var expression = parser.Parse();
                 if (expression == null) break;
                 else lambda = expression;
             }
 
-            return lambda ?? throw new CompilerException(tokenizer.Position, "The formula was not found");
+            return lambda ?? throw new CompilerException(reader.Location, "The formula was not found");
         }
 
         public static LambdaExpression CompileFromFile(string path)
         {
-            if (path == null)
-                throw new ArgumentNullException(nameof(path));
+            if (path == null) throw new ArgumentNullException(nameof(path));
 
-            LambdaExpression lambda = null;
+            LambdaExpression? lambda = null;
             using var stream = new FileStream(path, FileMode.Open, FileAccess.Read);
-            using var reader = new StreamReader(stream, System.Text.Encoding.UTF8);
-            var tokenizer = new Tokenizer(reader);
-            var parser = new Parser(tokenizer);
-            while (!tokenizer.EndOfStream)
+            using var output = new StreamReader(stream, System.Text.Encoding.UTF8);
+            var reader = SourceReader.From(output);
+            var lexer = new Lexer(reader);
+            var parser = new Parser(lexer);
+            while (true)
             {
                 var expression = parser.Parse();
                 if (expression == null) break;
                 else lambda = expression;
             }
 
-            return lambda ?? throw new CompilerException(tokenizer.Position, "The formula was not found");
+            return lambda ?? throw new CompilerException(reader.Location, "The formula was not found");
         }
     }
 }

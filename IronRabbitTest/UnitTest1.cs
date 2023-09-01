@@ -18,7 +18,7 @@ namespace IronRabbitTest
                 ["x"] = 2,
             });
 
-            Assert.AreEqual(result, 21D);
+            Assert.AreEqual(result, 21M);
         }
 
         [TestMethod]
@@ -33,7 +33,7 @@ namespace IronRabbitTest
                 ["lv"] = 4,
             });
 
-            Assert.AreEqual(result, 140D);
+            Assert.AreEqual(result, 140M);
             Assert.AreEqual(str, "maxhp(lv)=exp(lv)+100");
         }
 
@@ -59,9 +59,9 @@ namespace IronRabbitTest
                 ["lv"] = 4,
             });
 
-            Assert.AreEqual(result1, 50D);
+            Assert.AreEqual(result1, 50M);
             Assert.AreEqual(str1, "exp(lv)=vf(lv)*10");
-            Assert.AreEqual(result2, 60D);
+            Assert.AreEqual(result2, 60M);
             Assert.AreEqual(str2, "exp(lv)=vf(lv)*10");
         }
 
@@ -70,11 +70,11 @@ namespace IronRabbitTest
         {
             var domain = new RabbitDomain();
             var expression = domain.CompileFromSource("maxhp(lv)=sqrt(lv)+100");
-            var func = expression.Compile<Func<double, double>>();
+            var func = expression.Compile<Func<decimal, decimal>>();
             var result = func(4);
             var str = expression.ToString();
 
-            Assert.AreEqual(result, 102D);
+            Assert.AreEqual(result, 102M);
             Assert.AreEqual(str, "maxhp(lv)=sqrt(lv)+100");
         }
 
@@ -82,15 +82,20 @@ namespace IronRabbitTest
         public void TestMethod5()
         {
             var domain = new RabbitDomain();
-            var expression = domain.CompileFromSource("f(lv)=if(lv<=0,0,5/lv)*10");
+            var expression = domain.CompileFromSource("f(lv)=if(lv<=4,lv,5/lv)*10");
             var str = expression.ToString();
             var result = expression.Eval(new RuntimeContext()
             {
                 ["lv"] = 5,
             });
+            Assert.AreEqual(result, 10M);
 
-            Assert.AreEqual(result, 10D);
-            Assert.AreEqual(str, "f(lv)=if(lv<=0,0,5/lv)*10");
+            result = expression.Eval(new RuntimeContext()
+            {
+                ["lv"] = 4,
+            });
+            Assert.AreEqual(result, 40M);
+            Assert.AreEqual(str, "f(lv)=if(lv<=4,lv,5/lv)*10");
         }
 
         [TestMethod]
@@ -99,8 +104,8 @@ namespace IronRabbitTest
             var domain = new RabbitDomain();
             domain.CompileFromSource("lv(t)=t+2");
             var expr = domain.CompileFromSource("exp(t)=lv(t)*2");
-            var func = expr.Compile<Func<double, double>>();
-            Assert.AreEqual(func(6), 16D);
+            var func = expr.Compile<Func<decimal, decimal>>();
+            Assert.AreEqual(func(6), 16M);
         }
 
         [TestMethod]
@@ -111,7 +116,7 @@ namespace IronRabbitTest
 p(lv)=lv+2
 f(lv)=p(lv)*10
 ");
-            Assert.AreEqual(expr.Eval(new RuntimeContext() { ["lv"] = 7 }), 90D);
+            Assert.AreEqual(expr.Eval(new RuntimeContext() { ["lv"] = 7 }), 90M);
         }
     }
 }

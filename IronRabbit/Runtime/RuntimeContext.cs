@@ -1,20 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace IronRabbit.Runtime
+﻿namespace IronRabbit.Runtime
 {
     public class RuntimeContext
     {
         private readonly Dictionary<string, RuntimeVariable> variables = new Dictionary<string, RuntimeVariable>();
-        private readonly RuntimeContext parent;
+        private readonly RuntimeContext? parent;
 
         public RuntimeContext()
         { }
 
         internal RuntimeContext(RuntimeContext parent)
         {
-            if (parent == null)
-                throw new ArgumentNullException(nameof(parent));
+            if (parent == null) throw new ArgumentNullException(nameof(parent));
 
             this.parent = parent;
             this.Domain = parent.Domain;
@@ -31,50 +27,66 @@ namespace IronRabbit.Runtime
             }
         }
 
-        internal RabbitDomain Domain { get; set; }
+        internal RabbitDomain? Domain { get; set; }
 
-        private RuntimeContext FindCurrentOrParent(string name)
+        public static RuntimeContext Variable(string name, object value)
+        {
+            var context = new RuntimeContext();
+            context.Define(name, value);
+            return context;
+        }
+
+        public static RuntimeContext Variable(params (string name, object value)[] variables)
+        {
+            var context = new RuntimeContext();
+            foreach (var variable in variables)
+            {
+                context.Define(variable.name, variable.value);
+            }
+
+            return context;
+        }
+
+        private RuntimeContext? FindCurrentOrParent(string name)
         {
             return variables.ContainsKey(name) ? this : parent?.FindCurrentOrParent(name);
         }
 
-        public void Variable(string name, object value)
+        public RuntimeVariable Define(string name, object value)
         {
-            if (name == null)
-                throw new ArgumentNullException(nameof(name));
+            if (name == null) throw new ArgumentNullException(nameof(name));
 
-            variables[name] = new RuntimeVariable(value);
+            var variable = new RuntimeVariable(value);
+            variables[name] = variable;
+            return variable;
         }
 
-        public RuntimeVariable Assign(string name, object value)
+        public RuntimeVariable? Assign(string name, object value)
         {
             if (name == null)
                 throw new ArgumentNullException(nameof(name));
 
             var context = FindCurrentOrParent(name);
             if (context == null) return null;
-            if (!context.variables.TryGetValue(name, out RuntimeVariable rv)) return null;
+            if (!context.variables.TryGetValue(name, out var rv)) return null;
 
             rv.SetValue(value);
             return rv;
         }
 
-        public RuntimeVariable Access(string name)
+        public RuntimeVariable? Access(string name)
         {
             if (name == null)
                 throw new ArgumentNullException(nameof(name));
 
             var context = FindCurrentOrParent(name);
             if (context == null) return null;
-            if (!context.variables.TryGetValue(name, out RuntimeVariable rv)) return null;
+            if (!context.variables.TryGetValue(name, out var rv)) return null;
             return rv;
         }
 
         public class RuntimeVariable
         {
-            public RuntimeVariable()
-            { }
-
             public RuntimeVariable(object value)
             {
                 Value = value;

@@ -1,19 +1,19 @@
-﻿using System;
-using IronRabbit.Runtime;
+﻿using IronRabbit.Runtime;
 
 namespace IronRabbit.Expressions
 {
     public class ConstantExpression : Expression
     {
         internal ConstantExpression(object value)
-            : base(ExpressionType.Constant)
         {
             Value = value;
         }
 
         public object Value { get; }
 
-        public override Type Type => Value?.GetType();
+        public override ExpressionType NodeType => ExpressionType.Constant;
+
+        public override Type Type => Value is null ? typeof(object) : Value.GetType();
 
         public override object Eval(RuntimeContext context)
         {
@@ -23,7 +23,7 @@ namespace IronRabbit.Expressions
             return Value;
         }
 
-        public override string ToString()
+        public override string? ToString()
         {
             return Value.ToString();
         }

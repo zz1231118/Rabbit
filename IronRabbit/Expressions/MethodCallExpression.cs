@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Text;
 using IronRabbit.Runtime;
 
@@ -8,23 +6,26 @@ namespace IronRabbit.Expressions
 {
     public class MethodCallExpression : Expression
     {
-        internal MethodCallExpression(Expression instance, string methodName, IList<Expression> arguments)
-            : base(ExpressionType.MethodCall)
+        internal MethodCallExpression(Expression? instance, string methodName, IList<Expression> arguments)
         {
             Instance = instance;
             MethodName = methodName;
             Arguments = new ReadOnlyCollection<Expression>(arguments);
         }
 
-        public Expression Instance { get; }
+        public override ExpressionType NodeType => ExpressionType.MethodCall;
+
+        public override Type Type => typeof(decimal);
+
+        public Expression? Instance { get; }
 
         public string MethodName { get; }
 
         public ReadOnlyCollection<Expression> Arguments { get; }
 
-        internal LambdaExpression GetLambda(RabbitDomain domain)
+        internal LambdaExpression? GetLambda(RabbitDomain? domain)
         {
-            LambdaExpression lambda;
+            LambdaExpression? lambda;
             if (domain != null)
             {
                 lambda = domain.GetLambda(MethodName);
@@ -39,14 +40,13 @@ namespace IronRabbit.Expressions
 
         public override object Eval(RuntimeContext context)
         {
-            if (context == null)
-                throw new ArgumentNullException(nameof(context));
+            if (context == null) throw new ArgumentNullException(nameof(context));
 
             if (Instance == null)
             {
                 var lambdaExpression = GetLambda(context.Domain);
                 if (lambdaExpression == null)
-                    throw new IronRabbit.Runtime.MissingMethodException(string.Format("missing method:{0}", MethodName));
+                    throw new MissingMethodException(string.Format("missing method:{0}", MethodName));
                 if (Arguments.Count != lambdaExpression.Parameters.Count)
                     throw new RuntimeException(string.Format("method:{0}. parame count error!", MethodName));
 
@@ -56,7 +56,7 @@ namespace IronRabbit.Expressions
                     var parameter = lambdaExpression.Parameters[i];
                     var argument = Arguments[i];
                     var value = argument.Eval(context);
-                    lambdaContext.Variable(parameter.Name, value);
+                    lambdaContext.Define(parameter.Name, value);
                 }
 
                 return lambdaExpression.Body.Eval(lambdaContext);

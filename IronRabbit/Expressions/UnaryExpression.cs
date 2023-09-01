@@ -1,15 +1,18 @@
-﻿using System;
-using IronRabbit.Runtime;
+﻿using IronRabbit.Runtime;
 
 namespace IronRabbit.Expressions
 {
     public class UnaryExpression : Expression
     {
         internal UnaryExpression(ExpressionType type, Expression operand)
-            : base(type)
         {
             Operand = operand;
+            NodeType = type;
         }
+
+        public override ExpressionType NodeType { get; }
+
+        public override Type Type => Operand.Type;
 
         public Expression Operand { get; }
 
@@ -22,9 +25,9 @@ namespace IronRabbit.Expressions
             switch (NodeType)
             {
                 case ExpressionType.Negate:
-                    return (-(double)value);
+                    return -(decimal)value;
                 case ExpressionType.Not:
-                    return (!(bool)value);
+                    return !(bool)value;
                 default:
                     throw new RuntimeException("unknown unary:" + NodeType.ToString());
             }
@@ -41,7 +44,7 @@ namespace IronRabbit.Expressions
                 default:
                     throw new RuntimeException("unknown operator:" + NodeType.ToString());
             }
-                    
+
         }
     }
 }

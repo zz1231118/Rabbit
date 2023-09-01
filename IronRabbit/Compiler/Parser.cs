@@ -1,114 +1,60 @@
-﻿using System;
-using System.Collections.Generic;
-using IronRabbit.Expressions;
+﻿using IronRabbit.Expressions;
 using IronRabbit.Syntax;
 
 namespace IronRabbit.Compiler
 {
-    internal class Parser
+    internal sealed class Parser : SyntaxParser
     {
-        private readonly Tokenizer tokenizer;
-        private TokenWithSpan lookahead;
-        private TokenWithSpan token;
+        public Parser(Lexer lexer)
+            : base(lexer)
+        { }
 
-        public Parser(Tokenizer tokenizer)
+        private static SyntaxTokenInfo GetSyntaxTokenInfo(SyntaxToken token)
         {
-            if (tokenizer == null)
-                throw new ArgumentNullException(nameof(tokenizer));
-
-            this.tokenizer = tokenizer;
-            Initialize();
-        }
-
-        private void Initialize()
-        {
-            FetchLookahead();
-        }
-
-        private Token NextToken()
-        {
-            token = lookahead;
-            FetchLookahead();
-            return token.Token;
-        }
-
-        private Token PeekToken()
-        {
-            return this.lookahead.Token;
-        }
-
-        private void FetchLookahead()
-        {
-            lookahead = new TokenWithSpan(tokenizer.NextToken(), tokenizer.TokenSpan);
-        }
-
-        private bool PeekToken(TokenKind kind)
-        {
-            return PeekToken().Kind == kind;
-        }
-
-        private bool PeekToken(Token check)
-        {
-            return PeekToken() == check;
-        }
-
-        private bool MaybeEat(TokenKind kind)
-        {
-            if (PeekToken().Kind == kind)
+            var precedence = token.Kind switch
             {
-                NextToken();
-                return true;
-            }
-            return false;
-        }
-
-        private LambdaExpression ParseStatement()
-        {
-            while (true)
-            {
-                switch (PeekToken().Kind)
-                {
-                    case TokenKind.Comment:
-                    case TokenKind.NewLine:
-                        NextToken();
-                        continue;
-                    case TokenKind.EndOfFile:
-                        return null;
-                    default:
-                        return ParseLambdaExpression();
-                }
-            }
-        }
-
-        private ExpressionType GetBinaryOperator(TokenKind kind)
-        {
-            return kind switch
-            {
-                TokenKind.Add => ExpressionType.Add,
-                TokenKind.Subtract => ExpressionType.Subtract,
-                TokenKind.Multiply => ExpressionType.Multiply,
-                TokenKind.Divide => ExpressionType.Divide,
-                TokenKind.Mod => ExpressionType.Modulo,
-                TokenKind.Power => ExpressionType.Power,
-                TokenKind.LessThan => ExpressionType.LessThan,
-                TokenKind.LessThanOrEqual => ExpressionType.LessThanOrEqual,
-                TokenKind.Equal => ExpressionType.Equal,
-                TokenKind.GreaterThanOrEqual => ExpressionType.GreaterThanOrEqual,
-                TokenKind.GreaterThan => ExpressionType.GreaterThan,
-                TokenKind.NotEqual => ExpressionType.NotEqual,
-                _ => throw new CompilerException(tokenizer.Position, string.Format("operator TokenKind:{0} error!", kind.ToString())),
+                SyntaxTokenKind.Equal or 
+                SyntaxTokenKind.NotEqual => SyntaxTokenPrecedence.Equality,
+                SyntaxTokenKind.LessThan or
+                SyntaxTokenKind.LessThanOrEqual or
+                SyntaxTokenKind.GreaterThan or
+                SyntaxTokenKind.GreaterThanOrEqual => SyntaxTokenPrecedence.Relational,
+                SyntaxTokenKind.Add or
+                SyntaxTokenKind.Subtract => SyntaxTokenPrecedence.Additive,
+                SyntaxTokenKind.Multiply or
+                SyntaxTokenKind.Divide or
+                SyntaxTokenKind.Mod or
+                SyntaxTokenKind.Power => SyntaxTokenPrecedence.Mutiplicative,
+                _ => SyntaxTokenPrecedence.Expression,
             };
+            var expressionType = token.Kind switch
+            {
+                SyntaxTokenKind.Add => ExpressionType.Add,
+                SyntaxTokenKind.Subtract => ExpressionType.Subtract,
+                SyntaxTokenKind.Multiply => ExpressionType.Multiply,
+                SyntaxTokenKind.Divide => ExpressionType.Divide,
+                SyntaxTokenKind.Mod => ExpressionType.Modulo,
+                SyntaxTokenKind.Power => ExpressionType.Power,
+                SyntaxTokenKind.LessThan => ExpressionType.LessThan,
+                SyntaxTokenKind.LessThanOrEqual => ExpressionType.LessThanOrEqual,
+                SyntaxTokenKind.Equal => ExpressionType.Equal,
+                SyntaxTokenKind.GreaterThanOrEqual => ExpressionType.GreaterThanOrEqual,
+                SyntaxTokenKind.GreaterThan => ExpressionType.GreaterThan,
+                SyntaxTokenKind.NotEqual => ExpressionType.NotEqual,
+                _ => ExpressionType.None,
+            };
+            return new SyntaxTokenInfo(token, precedence, expressionType);
         }
 
         private IList<Expression> ParseArguments()
         {
             List<Expression> list = new List<Expression>();
-            if (PeekToken().Kind != TokenKind.RightParen)
+            if (Current.Kind != SyntaxTokenKind.RightParen)
             {
                 do
                 {
                     list.Add(ParseExpression());
-                } while (MaybeEat(TokenKind.Comma));
+                } while (TryEatToken(SyntaxTokenKind.Comma));
             }
 
             return list;
@@ -116,98 +62,76 @@ namespace IronRabbit.Compiler
 
         private Expression ParseTerm()
         {
-            Expression expr = null;
-            Token token = NextToken();
+            Expression expr;
+            SyntaxToken token = EatToken();
             switch (token.Kind)
             {
-                case TokenKind.Constant:
-                    expr = Expression.Constant(token.Value);
+                case SyntaxTokenKind.Numeric:
+                    expr = Expression.Constant((decimal)token.Value);
                     break;
-                case TokenKind.Subtract:
-                    expr = Expression.Negate(ParseExpression());
+                case SyntaxTokenKind.Subtract:
+                    expr = Expression.Negate(ParseTerm());
                     break;
-                case TokenKind.LeftParen:
+                case SyntaxTokenKind.LeftParen:
                     expr = ParseExpression();
-                    if (!MaybeEat(TokenKind.RightParen))
-                        throw new CompilerException(tokenizer.Position, PeekToken().Text);
+                    EatToken(SyntaxTokenKind.RightParen);
                     break;
-                case TokenKind.Identifier:
-                    switch (PeekToken().Kind)
+                case SyntaxTokenKind.Symbol:
+                    switch (token.Text)
                     {
-                        case TokenKind.LeftParen:
-                            NextToken();
+                        case "if":
+                            {
+                                EatToken(SyntaxTokenKind.LeftParen);
+                                var test = ParseExpression();
+                                EatToken(SyntaxTokenKind.Comma);
+                                var trueExpre = ParseExpression();
+                                EatToken(SyntaxTokenKind.Comma);
+                                var falseExpre = ParseExpression();
+                                EatToken(SyntaxTokenKind.RightParen);
+                                return new ConditionalExpression(test, trueExpre, falseExpre);
+                            }
+                    }
+                    switch (Current.Kind)
+                    {
+                        case SyntaxTokenKind.LeftParen:
+                            EatToken();
                             expr = Expression.Call(null, token.Text, ParseArguments());
-                            if (!MaybeEat(TokenKind.RightParen))
-                                throw new CompilerException(tokenizer.Position, PeekToken().Text);
-
+                            EatToken(SyntaxTokenKind.RightParen);
                             break;
-                        case TokenKind.Dot:
-                            expr = Expression.Parameter(null, token.Text);
-                            while (MaybeEat(TokenKind.Dot))
-                            {
-                                token = NextToken();
-                                if (token.Kind != TokenKind.Identifier)
-                                    throw new CompilerException(tokenizer.Position, PeekToken().Text);
-                                if (PeekToken().Kind == TokenKind.LeftParen)
-                                {
-                                    expr = Expression.Call(expr, token.Text, ParseArguments());
-                                    if (!MaybeEat(TokenKind.RightParen))
-                                        throw new CompilerException(tokenizer.Position, PeekToken().Text);
-                                    break;
-                                }
-
-                                expr = Expression.Member(expr, token.Text);
-                            }
-                            if (MaybeEat(TokenKind.LeftParen))
-                            {
-                                expr = Expression.Call(expr, token.Text, ParseArguments());
-                                if (!MaybeEat(TokenKind.RightParen))
-                                    throw new CompilerException(tokenizer.Position, PeekToken().Text);
-                            }
+                        case SyntaxTokenKind.Dot:
+                            EatToken();
+                            expr = Expression.Parameter(typeof(object), token.Text);
+                            expr = Expression.Member(expr, EatToken(SyntaxTokenKind.Symbol).Text);
                             break;
                         default:
-                            expr = Expression.Parameter(typeof(double), token.Text);
+                            expr = Expression.Parameter(typeof(decimal), token.Text);
                             break;
                     }
                     break;
-                case TokenKind.Not:
-                    return Expression.Not(ParseExpression()); 
-                case TokenKind.IF:
-                    if (!MaybeEat(TokenKind.LeftParen))
-                        throw new CompilerException(tokenizer.Position, PeekToken().Text);
-                    var test = ParseExpression();
-                    if (!MaybeEat(TokenKind.Comma))
-                        throw new CompilerException(tokenizer.Position, PeekToken().Text);
-                    var trueExpre = ParseExpression();
-                    if (!MaybeEat(TokenKind.Comma))
-                        throw new CompilerException(tokenizer.Position, PeekToken().Text);
-                    var falseExpre = ParseExpression();
-                    if (!MaybeEat(TokenKind.RightParen))
-                        throw new CompilerException(tokenizer.Position, PeekToken().Text);
-
-                    expr = Expression.Condition(test, trueExpre, falseExpre);
-                    break;
+                case SyntaxTokenKind.Not:
+                    return Expression.Not(ParseTerm());
+                default:
+                    throw new CompilerException(Current);
             }
 
             return expr;
         }
 
-        private Expression ParseExpression(byte precedence = 0)
+        private Expression ParseExpression(SyntaxTokenPrecedence precedence = SyntaxTokenPrecedence.Expression)
         {
-            Expression leftOperand = ParseTerm();
+            var leftOperand = ParseTerm();
             while (true)
             {
-                Token token = PeekToken();
-                if (token is OperatorToken operatorToken && operatorToken.Precedence >= precedence)
+                var info = GetSyntaxTokenInfo(Current);
+                if (info.Precedence <= SyntaxTokenPrecedence.Expression || info.Precedence < precedence)
                 {
-                    NextToken();
-                    Expression rightOperand = ParseExpression(checked((byte)(operatorToken.Precedence + 1)));
-                    ExpressionType @operator = GetBinaryOperator(token.Kind);
-                    leftOperand = new BinaryExpression(@operator, leftOperand, rightOperand);
-                    continue;
+                    break;
                 }
 
-                break;
+                EatToken();
+                var rightOperand = ParseExpression(info.Precedence);
+                var type = info.Precedence == SyntaxTokenPrecedence.Equality || info.Precedence == SyntaxTokenPrecedence.Relational ? typeof(bool) : leftOperand.Type;
+                leftOperand = new BinaryExpression(info.ExpressionType, leftOperand, rightOperand, type);
             }
 
             return leftOperand;
@@ -215,39 +139,43 @@ namespace IronRabbit.Compiler
 
         private LambdaExpression ParseLambdaExpression()
         {
-            Token token = NextToken();
-            if (token.Kind != TokenKind.Identifier)
-                throw new CompilerException(tokenizer.Position, token.Text);
-
-            var name = token.Text;
+            var nameToken = EatToken(SyntaxTokenKind.Symbol);
             var parameters = new List<ParameterExpression>();
-            if (MaybeEat(TokenKind.LeftParen))
+            if (TryEatToken(SyntaxTokenKind.LeftParen))
             {
-                if (!MaybeEat(TokenKind.RightParen))
+                if (!TryEatToken(SyntaxTokenKind.RightParen))
                 {
                     do
                     {
-                        token = NextToken();
-                        if (token.Kind != TokenKind.Identifier)
-                            throw new CompilerException(tokenizer.Position, token.Text);
+                        var token = EatToken(SyntaxTokenKind.Symbol);
+                        parameters.Add(Expression.Parameter(typeof(decimal), token.Text));
+                    } while (TryEatToken(SyntaxTokenKind.Comma));
 
-                        parameters.Add(Expression.Parameter(typeof(double), token.Text));
-                    } while (MaybeEat(TokenKind.Comma));
-
-                    if (!MaybeEat(TokenKind.RightParen))
-                        throw new CompilerException(tokenizer.Position, token.Text);
+                    EatToken(SyntaxTokenKind.RightParen);
                 }
             }
-            if (!MaybeEat(TokenKind.Assign))
-                throw new CompilerException(tokenizer.Position, PeekToken().Text);
 
-            Expression body = ParseExpression();
-            return Expression.Lambda(name, body, parameters);
+            EatToken(SyntaxTokenKind.Assign);
+            var body = ParseExpression();
+            return Expression.Lambda(nameToken.Text, body, parameters);
         }
 
-        public LambdaExpression Parse()
+        public LambdaExpression? Parse()
         {
-            return ParseStatement();
+            while (true)
+            {
+                switch (Current.Kind)
+                {
+                    case SyntaxTokenKind.Annotation:
+                    case SyntaxTokenKind.NewLine:
+                        EatToken();
+                        continue;
+                    case SyntaxTokenKind.EndOfFile:
+                        return null;
+                    default:
+                        return ParseLambdaExpression();
+                }
+            }
         }
     }
 }

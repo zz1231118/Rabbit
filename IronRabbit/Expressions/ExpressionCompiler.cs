@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using IronRabbit.Runtime;
+﻿using IronRabbit.Runtime;
 
 namespace IronRabbit.Expressions
 {
@@ -18,7 +16,7 @@ namespace IronRabbit.Expressions
             return lambda;
         }
 
-        public Delegate Compile(LambdaExpression expression, Type delegateType = null)
+        public Delegate Compile(LambdaExpression expression, Type? delegateType = null)
         {
             var lambda = new LambdaCompiler(this, expression);
             lambdas.Add(lambda.Name, lambda);
@@ -51,8 +49,8 @@ namespace IronRabbit.Expressions
                     case ConditionalExpression conditionExpression:
                         {
                             var test = EmitExpression(conditionExpression.Test);
-                            var trueExpression = EmitExpression(conditionExpression.TrueExpression);
-                            var falseExpression = EmitExpression(conditionExpression.FalseExpression);
+                            var trueExpression = EmitExpression(conditionExpression.IfTrue);
+                            var falseExpression = EmitExpression(conditionExpression.IfFalse);
                             return System.Linq.Expressions.Expression.Condition(test, trueExpression, falseExpression);
                         }
                     case BinaryExpression binaryExpression:
@@ -73,7 +71,7 @@ namespace IronRabbit.Expressions
                                 ExpressionType.GreaterThanOrEqual => System.Linq.Expressions.Expression.GreaterThanOrEqual(left, right),
                                 ExpressionType.GreaterThan => System.Linq.Expressions.Expression.GreaterThan(left, right),
                                 ExpressionType.NotEqual => System.Linq.Expressions.Expression.NotEqual(left, right),
-                                _ => throw new LambdaCompilerException("unknown operator char:" + expression.NodeType.ToString()),
+                                _ => throw new LambdaCompilerException($"unknown operator char:{expression.NodeType}"),
                             };
                         }
                     case ConstantExpression constantExpression:
@@ -81,15 +79,34 @@ namespace IronRabbit.Expressions
                     case MethodCallExpression methodCallExpression:
                         {
                             var lambda = methodCallExpression.GetLambda(this.expression.Domain);
-                            if (lambda == null) throw new LambdaCompilerException(string.Format("missing method:{0}", methodCallExpression.MethodName));
+                            if (lambda == null) throw new LambdaCompilerException($"missing method:{methodCallExpression.MethodName}");
                             if (lambda is SystemLambdaExpression systemLambda)
                             {
                                 var arguments = new List<System.Linq.Expressions.Expression>();
-                                foreach (var argument in methodCallExpression.Arguments)
+                                var parameters = systemLambda.Method.GetParameters();
+                                if (methodCallExpression.Arguments.Count != parameters.Length)
                                 {
-                                    arguments.Add(EmitExpression(argument));
+                                    throw new LambdaCompilerException("the parameters are inconsistent");
                                 }
-                                return System.Linq.Expressions.Expression.Call(null, systemLambda.Method, arguments);
+                                for (var i = 0; i < parameters.Length; i++)
+                                {
+                                    var parameter = parameters[i];
+                                    var argument = EmitExpression(methodCallExpression.Arguments[i]);
+                                    if (argument.Type != parameter.ParameterType)
+                                    {
+                                        argument = System.Linq.Expressions.Expression.Convert(argument, parameter.ParameterType);
+                                    }
+
+                                    arguments.Add(argument);
+                                }
+
+                                System.Linq.Expressions.Expression returnExp = System.Linq.Expressions.Expression.Call(null, systemLambda.Method, arguments);
+                                if (systemLambda.Method.ReturnType != systemLambda.Type)
+                                {
+                                    returnExp = System.Linq.Expressions.Expression.Convert(returnExp, systemLambda.Type);
+                                }
+
+                                return returnExp;
                             }
                             else
                             {
@@ -109,7 +126,7 @@ namespace IronRabbit.Expressions
                                 return System.Linq.Expressions.Expression.Convert(
                                     System.Linq.Expressions.Expression.Call(
                                         System.Linq.Expressions.Expression.Constant(custom),
-                                        typeof(Delegate).GetMethod(nameof(Delegate.DynamicInvoke)),
+                                        typeof(Delegate).GetMethod(nameof(Delegate.DynamicInvoke))!,
                                         System.Linq.Expressions.Expression.NewArrayInit(elementType, arguments)),
                                     lambda.Type);
                             }
@@ -117,7 +134,7 @@ namespace IronRabbit.Expressions
                     case ParameterExpression parameterExpression:
                         {
                             var parameter = parameters.Find(p => p.Name == parameterExpression.Name);
-                            if (parameter == null) throw new RuntimeException("Missing member:" + parameterExpression.Name);
+                            if (parameter == null) throw new RuntimeException($"Missing member:{parameterExpression.Name}");
                             return parameter;
                         }
                     case UnaryExpression unaryExpression:
@@ -127,15 +144,15 @@ namespace IronRabbit.Expressions
                             {
                                 ExpressionType.Negate => System.Linq.Expressions.Expression.Negate(operand),
                                 ExpressionType.Not => System.Linq.Expressions.Expression.Not(operand),
-                                _ => throw new RuntimeException("unknown NodeType:" + unaryExpression.NodeType.ToString()),
+                                _ => throw new RuntimeException($"unknown NodeType:{unaryExpression.NodeType}"),
                             };
                         }
                     default:
-                        return null;
+                        throw new ArgumentException($"unknown ironrabbit expression: {expression.GetType()}");
                 }
             }
 
-            public Delegate Compile(Type delegateType = null)
+            public Delegate Compile(Type? delegateType = null)
             {
                 var body = EmitExpression(this.expression.Body);
                 var lambda = delegateType == null

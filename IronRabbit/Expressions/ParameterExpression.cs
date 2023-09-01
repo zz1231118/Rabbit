@@ -1,16 +1,17 @@
-﻿using System;
-using IronRabbit.Runtime;
+﻿using IronRabbit.Runtime;
 
 namespace IronRabbit.Expressions
 {
     public class ParameterExpression : Expression
     {
         internal ParameterExpression(ExpressionType nodeType, Type type, string name)
-            : base(nodeType)
         {
             Type = type;
             Name = name;
+            NodeType = nodeType;
         }
+
+        public override ExpressionType NodeType { get; }
 
         public override Type Type { get; }
 
@@ -19,8 +20,7 @@ namespace IronRabbit.Expressions
         internal static object Access(RuntimeContext context, string name)
         {
             var value = context.Access(name);
-            if (value == null)
-                throw new IronRabbit.Runtime.MissingMemberException(string.Format("missing member:{0}", name));
+            if (value == null) throw new MissingMemberException(string.Format("missing member:{0}", name));
 
             return value.Value;
         }
@@ -32,8 +32,7 @@ namespace IronRabbit.Expressions
 
         public override object Eval(RuntimeContext context)
         {
-            if (context == null)
-                throw new ArgumentNullException(nameof(context));
+            if (context == null) throw new ArgumentNullException(nameof(context));
 
             return Access(context, Name);
         }

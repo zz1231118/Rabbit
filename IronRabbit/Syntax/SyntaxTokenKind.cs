@@ -1,13 +1,12 @@
 ﻿namespace IronRabbit.Syntax
 {
-    internal enum TokenKind : byte
+    internal enum SyntaxTokenKind : byte
     {
         EndOfFile,
         NewLine,
-        Error,
-        Identifier,
-        Constant,
-        Comment,
+        Symbol,
+        Numeric,
+        Annotation,
 
         /// <summary>
         /// +
@@ -92,7 +91,5 @@
         /// !=
         /// </summary>
         NotEqual,
-
-        IF,
     }
 }

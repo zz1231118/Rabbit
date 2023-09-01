@@ -1,16 +1,18 @@
-﻿using System;
-using IronRabbit.Runtime;
+﻿using IronRabbit.Runtime;
 
 namespace IronRabbit.Expressions
 {
     public class MemberExpression : Expression
     {
         internal MemberExpression(Expression instance, string name)
-            : base(ExpressionType.MemberAccess)
         {
             Instance = instance;
             Name = name;
         }
+
+        public override ExpressionType NodeType => ExpressionType.MemberAccess;
+
+        public override Type Type => typeof(decimal);
 
         public Expression Instance { get; }
 
@@ -18,10 +20,9 @@ namespace IronRabbit.Expressions
 
         public override object Eval(RuntimeContext context)
         {
-            if (context == null)
-                throw new ArgumentNullException(nameof(context));
+            if (context == null) throw new ArgumentNullException(nameof(context));
 
-            return default(double);
+            return default(decimal);
         }
 
         public override string ToString()

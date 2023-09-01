@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using IronRabbit.Compiler;
+﻿using IronRabbit.Compiler;
 using IronRabbit.Expressions;
 
 namespace IronRabbit
@@ -18,7 +15,7 @@ namespace IronRabbit
             lambdas[lambda.Name] = lambda;
         }
 
-        public bool TryGetLambda(string name, out LambdaExpression lambda)
+        public bool TryGetLambda(string name, [MaybeNullWhen(false)] out LambdaExpression lambda)
         {
             if (lambdas.TryGetValue(name, out lambda))
             {
@@ -33,22 +30,21 @@ namespace IronRabbit
             return false;
         }
 
-        public LambdaExpression GetLambda(string name)
+        public LambdaExpression? GetLambda(string name)
         {
-            TryGetLambda(name, out LambdaExpression lambda);
+            TryGetLambda(name, out var lambda);
             return lambda;
         }
 
         public LambdaExpression CompileFromSource(string source)
         {
-            if (source == null)
-                throw new ArgumentNullException(nameof(source));
+            if (source == null) throw new ArgumentNullException(nameof(source));
 
-            LambdaExpression lambda = null;
-            using var reader = new StringReader(source);
-            var tokenizer = new Tokenizer(reader);
-            var parser = new Parser(tokenizer);
-            while (!tokenizer.EndOfStream)
+            LambdaExpression? lambda = null;
+            var reader = SourceReader.From(source);
+            var lexer = new Lexer(reader);
+            var parser = new Parser(lexer);
+            while (true)
             {
                 var expression = parser.Parse();
                 if (expression == null) break;
@@ -58,20 +54,20 @@ namespace IronRabbit
                 lambda = expression;
             }
 
-            return lambda ?? throw new CompilerException(tokenizer.Position, "The formula was not found");
+            return lambda ?? throw new CompilerException(reader.Location, "The formula was not found");
         }
 
         public LambdaExpression CompileFromFile(string path)
         {
-            if (path == null)
-                throw new ArgumentNullException(nameof(path));
+            if (path == null) throw new ArgumentNullException(nameof(path));
 
-            LambdaExpression lambda = null;
+            LambdaExpression? lambda = null;
             using var stream = new FileStream(path, FileMode.Open, FileAccess.Read);
-            using var reader = new StreamReader(stream, System.Text.Encoding.UTF8);
-            var tokenizer = new Tokenizer(reader);
-            var parser = new Parser(tokenizer);
-            while (!tokenizer.EndOfStream)
+            using var output = new StreamReader(stream, System.Text.Encoding.UTF8);
+            var reader = SourceReader.From(output);
+            var lexer = new Lexer(reader);
+            var parser = new Parser(lexer);
+            while (true)
             {
                 var expression = parser.Parse();
                 if (expression == null) break;
@@ -81,7 +77,7 @@ namespace IronRabbit
                 lambda = expression;
             }
 
-            return lambda ?? throw new CompilerException(tokenizer.Position, "The formula was not found");
+            return lambda ?? throw new CompilerException(reader.Location, "The formula was not found");
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Text;
 using IronRabbit.Runtime;
 
@@ -8,14 +7,17 @@ namespace IronRabbit.Expressions
     public class LambdaExpression : Expression
     {
         internal LambdaExpression(string name, Expression body, params ParameterExpression[] parameters)
-            : base(ExpressionType.Lambda)
         {
             Name = name;
             Parameters = new ReadOnlyCollection<ParameterExpression>(parameters);
             Body = body;
         }
 
-        public RabbitDomain Domain { get; internal set; }
+        public override ExpressionType NodeType => ExpressionType.Lambda;
+
+        public override Type Type => typeof(decimal);
+
+        public RabbitDomain? Domain { get; internal set; }
 
         public string Name { get; }
 
@@ -23,23 +25,21 @@ namespace IronRabbit.Expressions
 
         public Expression Body { get; }
 
-        public override Type Type => typeof(double);
-
-        public Delegate Compile(Type deletageType = null)
+        public Delegate Compile(Type? deletageType = null)
         {
             var lambdaCompiler = new ExpressionCompiler();
             return lambdaCompiler.Compile(this, deletageType);
         }
 
         public T Compile<T>()
+            where T : Delegate
         {
-            return (T)(object)Compile(typeof(T));
+            return (T)Compile(typeof(T));
         }
 
         public override object Eval(RuntimeContext context)
         {
-            if (context == null)
-                throw new ArgumentNullException(nameof(context));
+            if (context == null) throw new ArgumentNullException(nameof(context));
 
             var lambdaContext = new RuntimeContext(context);
             lambdaContext.Domain = Domain;
@@ -47,7 +47,7 @@ namespace IronRabbit.Expressions
             {
                 var parameter = Parameters[i];
                 var value = parameter.Eval(context);
-                lambdaContext.Variable(parameter.Name, value);
+                lambdaContext.Define(parameter.Name, value);
             }
 
             return Body.Eval(lambdaContext);
