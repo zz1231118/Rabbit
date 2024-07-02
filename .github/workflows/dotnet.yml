@@ -7,9 +7,6 @@ on:
   push:
     branches: [ "master" ]
 
-env:
-  RELEASE_TAG: ${{ date +'%Y%m%d%H%M%S' }}
-
 jobs:
   build:
     runs-on: ubuntu-latest
