@@ -11,8 +11,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - name: get-current-time
-      run: echo "CURRENT_DATE=$(date +'%Y-%m-%d-%H-%M-%S')" >> $GITHUB_ENV
     - uses: actions/checkout@v4
     - name: setup-dotnet
       uses: actions/setup-dotnet@v4
@@ -23,14 +21,11 @@ jobs:
     - name: build
       run: dotnet build --no-restore --output ./bin -m
     - name: test
-      run: dotnet test --no-build --verbosity normal --output ./bin
+      run: dotnet test --no-build --verbosity normal
     - name: package-generated-files
       run: |
-            pwd
-            cd ./bin
-            zip -r ./asset.zip ./*
-            pwd
-            ls -l
+        cd ./bin
+        zip -r ./asset.zip ./*
     - name: get-current-time
       run: echo "CURRENT_DATE=$(date +'%Y-%m-%d-%H-%M-%S')" >> $GITHUB_ENV
     - name: create-release
@@ -43,10 +38,6 @@ jobs:
         release_name: Release ${{ github.ref_name }}-${{ env.CURRENT_DATE }}
         draft: false
         prerelease: false
-    - name: print
-      run: |
-          pwd
-          ls -l
     - name: upload-release-asset
       uses: actions/upload-release-asset@v1
       env:
