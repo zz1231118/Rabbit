@@ -30,14 +30,16 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
+      - name: 获取当前日期
+        run: echo "CURRENT_DATE=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.ref_name }}-${{ RELEASE_TAG }}
-          release_name: Release ${{ github.ref_name }}-${{ RELEASE_TAG }}
+          tag_name: ${{ github.ref_name }}-${{ env.CURRENT_DATE }}
+          release_name: Release ${{ github.ref_name }}-${{ env.CURRENT_DATE }}
           draft: false
           prerelease: false
 
