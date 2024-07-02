@@ -19,18 +19,19 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
-      run: dotnet build --no-restore
+      run: dotnet build --no-restore --output ./bin
     - name: Test
       run: dotnet test --no-build --verbosity normal
-
+    - name: 打包生成的文件
+      run: zip -r ./asset.zip ./bin/
+        
   release:
     needs: build
     runs-on: ubuntu-latest
     steps:
       - name: 获取当前日期
         run: echo "CURRENT_DATE=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
-      - name: Create Release
-        id: create_release
+      - name: 创建发布
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -39,8 +40,7 @@ jobs:
           release_name: Release ${{ github.ref_name }}-${{ env.CURRENT_DATE }}
           draft: false
           prerelease: false
-
-      - name: Upload Release Asset
+      - name: 更新发布资产
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
