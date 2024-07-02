@@ -23,7 +23,11 @@ jobs:
     - name: test
       run: dotnet test --no-build --verbosity normal --output ./bin
     - name: package-generated-files
-      run: zip -r ./asset.zip ./bin/
+      run: |
+            pwd
+            cd ./bin
+            zip -r ./../asset.zip ./*
+            pwd
         
   release:
     needs: build
@@ -47,6 +51,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./asset.zip
           asset_name: asset.zip
+          asset_path: ./asset.zip
           asset_content_type: application/zip
