@@ -11,6 +11,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+    - name: get-current-time
+      run: echo "CURRENT_DATE=$(date +'%Y-%m-%d-%H-%M-%S')" >> $GITHUB_ENV
     - uses: actions/checkout@v4
     - name: setup-dotnet
       uses: actions/setup-dotnet@v4
@@ -26,37 +28,31 @@ jobs:
       run: |
             pwd
             cd ./bin
-            zip -r ./../asset.zip ./*
-            pwd
-            cd ..
-            ls -l
-        
-  release:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: get-current-time
-        run: echo "CURRENT_DATE=$(date +'%Y-%m-%d-%H-%M-%S')" >> $GITHUB_ENV
-      - name: create-release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref_name }}-${{ env.CURRENT_DATE }}
-          release_name: Release ${{ github.ref_name }}-${{ env.CURRENT_DATE }}
-          draft: false
-          prerelease: false
-      - name: print
-        run: |
+            zip -r ./asset.zip ./*
             pwd
             ls -l
-      - name: upload-release-asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_name: asset.zip
-          asset_path: ./asset.zip
-          asset_content_type: application/zip
+    - name: get-current-time
+      run: echo "CURRENT_DATE=$(date +'%Y-%m-%d-%H-%M-%S')" >> $GITHUB_ENV
+    - name: create-release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref_name }}-${{ env.CURRENT_DATE }}
+        release_name: Release ${{ github.ref_name }}-${{ env.CURRENT_DATE }}
+        draft: false
+        prerelease: false
+    - name: print
+      run: |
+          pwd
+          ls -l
+    - name: upload-release-asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_name: asset.zip
+        asset_path: ./bin/asset.zip
+        asset_content_type: application/zip
