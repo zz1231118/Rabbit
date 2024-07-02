@@ -19,9 +19,9 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
-      run: dotnet build --no-restore --output ./bin
+      run: dotnet build --no-restore --output ./bin -m
     - name: Test
-      run: dotnet test --no-build --verbosity normal
+      run: dotnet test --no-build --verbosity normal --output ./bin
     - name: 打包生成的文件
       run: zip -r ./asset.zip ./bin/
         
