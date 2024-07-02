@@ -12,26 +12,26 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    - name: setup-dotnet
+    - name: setup_dotnet
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0.x
-    - name: restore-dependencies
+    - name: restore_dependencies
       run: dotnet restore
     - name: build
       run: dotnet build --no-restore --output ./bin -m
     - name: test
       run: dotnet test --no-build --verbosity normal --output ./bin
-    - name: package-generated-file
+    - name: package_generated_file
       run: zip -r ./asset.zip ./bin/
         
   release:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - name: get-current-time
+      - name: get_current_time
         run: echo "CURRENT_DATE=$(date +'%Y-%m-%d-%H-%M-%S')" >> $GITHUB_ENV
-      - name: create-release
+      - name: create_release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -40,12 +40,12 @@ jobs:
           release_name: Release ${{ github.ref_name }}-${{ env.CURRENT_DATE }}
           draft: false
           prerelease: false
-      - name: upload-release-asset
+      - name: upload_release_asset
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.create-release.outputs.upload_url }}
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./asset.zip
           asset_name: asset.zip
           asset_content_type: application/zip
