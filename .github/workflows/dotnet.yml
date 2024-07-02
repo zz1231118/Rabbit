@@ -12,26 +12,26 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    - name: Setup .NET
+    - name: setup-dotnet
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0.x
-    - name: Restore dependencies
+    - name: restore-dependencies
       run: dotnet restore
-    - name: Build
+    - name: build
       run: dotnet build --no-restore --output ./bin -m
-    - name: Test
+    - name: test
       run: dotnet test --no-build --verbosity normal --output ./bin
-    - name: 打包生成的文件
+    - name: package-generated-file
       run: zip -r ./asset.zip ./bin/
         
   release:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - name: 获取当前日期
+      - name: get-current-time
         run: echo "CURRENT_DATE=$(date +'%Y-%m-%d-%H-%M-%S')" >> $GITHUB_ENV
-      - name: 创建发布
+      - name: create-release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -40,12 +40,12 @@ jobs:
           release_name: Release ${{ github.ref_name }}-${{ env.CURRENT_DATE }}
           draft: false
           prerelease: false
-      - name: 更新发布资产
+      - name: upload-release-asset
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          upload_url: ${{ steps.create-release.outputs.upload_url }}
           asset_path: ./asset.zip
           asset_name: asset.zip
           asset_content_type: application/zip
