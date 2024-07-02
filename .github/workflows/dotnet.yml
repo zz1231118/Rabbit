@@ -30,7 +30,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: 获取当前日期
-        run: echo "CURRENT_DATE=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
+        run: echo "CURRENT_DATE=$(date +'%Y-%m-%d %H-%M-%S')" >> $GITHUB_ENV
       - name: 创建发布
         uses: actions/create-release@v1
         env:
