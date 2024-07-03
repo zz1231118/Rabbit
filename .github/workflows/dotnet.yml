@@ -17,9 +17,9 @@ jobs:
       with:
         dotnet-version: 8.0.x
     - name: build
-      run: dotnet build --output ./bin -m
+      run: dotnet build ./IronRabbit/IronRabbit.csproj --output ./bin -m
     - name: test
-      run: dotnet test --verbosity normal --output ./obj/test
+      run: dotnet test --no-build --verbosity normal --output ./bin
     - name: package-generated-files
       run: |
         cd ./bin
